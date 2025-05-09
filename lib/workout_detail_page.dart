@@ -13,6 +13,16 @@ class WorkoutDetailPage extends StatelessWidget {
     required this.workout,
   }) : super(key: key);
 
+  // Calculate total duration (estimating 1 minute per set)
+  int get estimatedDuration {
+    return workout.exercises.fold(0, (sum, exercise) => sum + exercise.config.sets);
+  }
+
+  // Calculate total calories
+  int get totalCalories {
+    return workout.exercises.fold(0, (sum, exercise) => sum + exercise.config.calories);
+  }
+
   Future<File> _getImageFile(String assetPath) async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/${assetPath.split('/').last}');
@@ -27,7 +37,10 @@ class WorkoutDetailPage extends StatelessWidget {
     return file;
   }
 
-  Widget _buildExerciseCard(Exercise exercise) {
+  Widget _buildExerciseCard(WorkoutExercise workoutExercise) {
+    final exercise = workoutExercise.exercise;
+    final config = workoutExercise.config;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(
@@ -36,37 +49,36 @@ class WorkoutDetailPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (exercise.imageUrl != null)
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              child: FutureBuilder<File>(
-                future: _getImageFile(exercise.imageUrl!),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SizedBox(
-                      height: 200,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
-                  if (snapshot.hasError || !snapshot.hasData) {
-                    return Image.asset(
-                      exercise.imageUrl!,
-                      width: double.infinity,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    );
-                  }
-                  return Image.file(
-                    snapshot.data!,
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            child: FutureBuilder<File>(
+              future: _getImageFile(exercise.imageUrl),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    height: 200,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+                if (snapshot.hasError || !snapshot.hasData) {
+                  return Image.asset(
+                    exercise.imageUrl,
                     width: double.infinity,
                     height: 200,
                     fit: BoxFit.cover,
                   );
-                },
-              ),
+                }
+                return Image.file(
+                  snapshot.data!,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
+          ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -95,20 +107,42 @@ class WorkoutDetailPage extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  '${exercise.sets} sets × ${exercise.reps} reps',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.blue,
-                  ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildConfigDetail('Sets', config.sets.toString()),
+                    _buildConfigDetail('Reps', config.reps.toString()),
+                    _buildConfigDetail('Calories', '${config.calories} cal'),
+                  ],
                 ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildConfigDetail(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 12,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 
@@ -140,28 +174,20 @@ class WorkoutDetailPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    workout.description,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
-                  ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
                       Icon(Icons.timer_outlined, size: 20, color: Colors.blue[600]),
                       const SizedBox(width: 8),
                       Text(
-                        '${workout.duration} min',
+                        '$estimatedDuration min',
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(width: 24),
                       Icon(Icons.local_fire_department_outlined, size: 20, color: Colors.orange[600]),
                       const SizedBox(width: 8),
                       Text(
-                        '${workout.calories} cal',
+                        '$totalCalories cal',
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(width: 24),
@@ -200,8 +226,7 @@ class WorkoutDetailPage extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: workout.exercises.length,
               itemBuilder: (context, index) {
-                final exercise = workout.exercises[index];
-                return _buildExerciseCard(exercise);
+                return _buildExerciseCard(workout.exercises[index]);
               },
             ),
           ],

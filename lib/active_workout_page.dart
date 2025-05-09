@@ -59,7 +59,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     return '$minutes:$seconds';
   }
 
-  Exercise get currentExercise {
+  WorkoutExercise get currentExercise {
     if (currentExerciseIndex >= widget.workout.exercises.length) {
       return widget.workout.exercises.last;
     }
@@ -70,186 +70,174 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     setState(() {
       if (completedSets[currentExerciseIndex].contains(setIndex)) {
         completedSets[currentExerciseIndex].remove(setIndex);
+        _caloriesBurned -= (currentExercise.config.calories / currentExercise.config.sets).round();
       } else {
         completedSets[currentExerciseIndex].add(setIndex);
+        _caloriesBurned += (currentExercise.config.calories / currentExercise.config.sets).round();
       }
     });
   }
 
   bool isSetCompleted(int setIndex) {
-    if (currentExerciseIndex >= completedSets.length) {
-      return false;
-    }
     return completedSets[currentExerciseIndex].contains(setIndex);
   }
 
-  bool isExerciseComplete() {
-    if (currentExerciseIndex >= completedSets.length) {
-      return true;
-    }
-    return completedSets[currentExerciseIndex].length == currentExercise.sets;
-  }
-
-  void onCompleteExercise() async {
-    if (currentExerciseIndex >= widget.workout.exercises.length) {
+  void onCompleteExercise() {
+    if (completedSets[currentExerciseIndex].length != currentExercise.config.sets) {
+      // Show warning if not all sets are completed
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Incomplete Exercise'),
+          content: const Text('You haven\'t completed all sets. Are you sure you want to continue?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Stay'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                moveToNextExercise();
+              },
+              child: const Text('Continue Anyway'),
+            ),
+          ],
+        ),
+      );
       return;
     }
 
-    if (!_exerciseCompleted.containsKey(currentExerciseIndex)) {
-      setState(() {
-        _caloriesBurned += currentExercise.calories;
-        _exerciseCompleted[currentExerciseIndex] = true;
-      });
-    }
+    moveToNextExercise();
+  }
 
+  void moveToNextExercise() {
     if (currentExerciseIndex < widget.workout.exercises.length - 1) {
       setState(() {
         currentExerciseIndex++;
       });
     } else {
-      // Workout completed
-      _timer.cancel();
-      _isActive = false; // Stop the timer updates
+      completeWorkout();
+    }
+  }
 
-      // Save workout statistics to Firebase
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Session expired. Please log in again.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-        return;
+  Future<void> completeWorkout() async {
+    _timer.cancel();
+    _isActive = false;
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Session expired. Please log in again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      return;
+    }
+
+    try {
+      final now = DateTime.now();
+      
+      // Update user data
+      final userRef = FirebaseDatabase.instance.ref('users/${user.uid}');
+      bool userDataCreated = false;
+
+      for (int i = 0; i < 3; i++) {
+        try {
+          final userSnapshot = await userRef.get();
+          if (!userSnapshot.exists) {
+            await userRef.set({
+              'email': user.email,
+              'createdAt': now.toIso8601String(),
+              'lastActive': now.toIso8601String(),
+              'totalWorkouts': 1,
+            });
+          } else {
+            await userRef.update({
+              'lastActive': now.toIso8601String(),
+            });
+          }
+          userDataCreated = true;
+          break;
+        } catch (e) {
+          if (i == 2) throw e;
+          await Future.delayed(const Duration(seconds: 1));
+        }
       }
 
-      try {
-        // Update progress bar before any async operations
-        setState(() {
-          currentExerciseIndex = widget.workout.exercises.length - 1;
-        });
-
-        final now = DateTime.now();
-        
-        // Create or update user data with retry mechanism
-        final userRef = FirebaseDatabase.instance.ref('users/${user.uid}');
-        bool userDataCreated = false;
-        
-        for (int i = 0; i < 3; i++) {
-          try {
-            final userSnapshot = await userRef.get();
-            if (!userSnapshot.exists) {
-              // Create basic user data if it doesn't exist
-              await userRef.set({
-                'email': user.email,
-                'createdAt': now.toIso8601String(),
-                'lastActive': now.toIso8601String(),
-                'totalWorkouts': 1,
-              });
-            } else {
-              // Update last active timestamp
-              await userRef.update({
-                'lastActive': now.toIso8601String(),
-              });
-            }
-            userDataCreated = true;
-            break;
-          } catch (e) {
-            if (i == 2) throw e;
-            await Future.delayed(Duration(seconds: 1));
-          }
-        }
-
-        if (!userDataCreated) {
-          throw Exception('Failed to create/update user data');
-        }
-
-        // Save to workout history
-        final workoutRef = FirebaseDatabase.instance.ref('workoutHistory/${user.uid}').push();
-        await workoutRef.set({
-          'workoutId': widget.workout.id,
-          'workoutTitle': widget.workout.title,
-          'completedAt': now.toIso8601String(),
-          'duration': _elapsed.inSeconds,
-          'caloriesBurned': _caloriesBurned,
-          'exercisesCompleted': widget.workout.exercises.length,
-        });
-
-        // Update weekly stats with retry mechanism
-        final weekStart = now.subtract(Duration(days: now.weekday - 1));
-        final weekKey = '${weekStart.year}-${weekStart.month}-${weekStart.day}';
-        final weeklyStatsRef = FirebaseDatabase.instance.ref('weeklyStats/${user.uid}/$weekKey');
-        
-        // Retry up to 3 times
-        for (int i = 0; i < 3; i++) {
-          try {
-            final weeklySnapshot = await weeklyStatsRef.get();
-
-            if (weeklySnapshot.exists) {
-              final data = Map<String, dynamic>.from(weeklySnapshot.value as Map);
-              await weeklyStatsRef.update({
-                'totalCalories': (data['totalCalories'] ?? 0) + _caloriesBurned,
-                'totalWorkouts': (data['totalWorkouts'] ?? 0) + 1,
-                'totalDuration': (data['totalDuration'] ?? 0) + _elapsed.inSeconds,
-                'lastUpdated': now.toIso8601String(),
-              });
-            } else {
-              await weeklyStatsRef.set({
-                'totalCalories': _caloriesBurned,
-                'totalWorkouts': 1,
-                'totalDuration': _elapsed.inSeconds,
-                'weekStart': weekStart.toIso8601String(),
-                'lastUpdated': now.toIso8601String(),
-              });
-            }
-            break; // Success, exit retry loop
-          } catch (e) {
-            if (i == 2) throw e; // On last attempt, rethrow the error
-            await Future.delayed(Duration(seconds: 1)); // Wait before retry
-          }
-        }
-
-        if (!mounted) return;
-
-        // Show completion message before navigation
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Workout completed! Calories burned: $_caloriesBurned, Time: $formattedTime',
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        // Add a small delay to ensure state updates and snackbar are processed
-        await Future.delayed(const Duration(milliseconds: 100));
-
-        if (!mounted) return;
-        Navigator.popUntil(
-          context,
-          (route) => route.settings.name == '/workout' || route.isFirst,
-        );
-      } catch (e) {
-        if (!mounted) return;
-        
-        // Handle different types of errors
-        String errorMessage = 'Error saving workout data';
-        if (e.toString().contains('permission-denied')) {
-          errorMessage = 'You don\'t have permission to save workout data';
-        } else if (e.toString().contains('auth')) {
-          errorMessage = 'Session expired. Please log in again';
-          Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-        }
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.red,
-          ),
-        );
+      if (!userDataCreated) {
+        throw Exception('Failed to create/update user data');
       }
+
+      // Save workout history
+      final workoutRef = FirebaseDatabase.instance.ref('workoutHistory/${user.uid}').push();
+      await workoutRef.set({
+        'workoutId': widget.workout.id,
+        'workoutTitle': widget.workout.title,
+        'completedAt': now.toIso8601String(),
+        'duration': _elapsed.inSeconds,
+        'caloriesBurned': _caloriesBurned,
+        'exercisesCompleted': widget.workout.exercises.length,
+      });
+
+      // Update weekly stats
+      final weekStart = now.subtract(Duration(days: now.weekday - 1));
+      final weekKey = '${weekStart.year}-${weekStart.month}-${weekStart.day}';
+      final weeklyStatsRef = FirebaseDatabase.instance.ref('weeklyStats/${user.uid}/$weekKey');
+
+      final weeklySnapshot = await weeklyStatsRef.get();
+      if (weeklySnapshot.exists) {
+        final data = Map<String, dynamic>.from(weeklySnapshot.value as Map);
+        await weeklyStatsRef.update({
+          'totalCalories': (data['totalCalories'] as int) + _caloriesBurned,
+          'totalWorkouts': (data['totalWorkouts'] as int) + 1,
+          'totalDuration': (data['totalDuration'] as int) + _elapsed.inMinutes,
+        });
+      } else {
+        await weeklyStatsRef.set({
+          'totalCalories': _caloriesBurned,
+          'totalWorkouts': 1,
+          'totalDuration': _elapsed.inMinutes,
+          'weekStart': weekStart.toIso8601String(),
+        });
+      }
+
+      if (!mounted) return;
+
+      // Show completion message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Workout completed! Calories burned: $_caloriesBurned, Time: $formattedTime',
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Navigate back
+      Navigator.popUntil(
+        context,
+        (route) => route.settings.name == '/workout' || route.isFirst,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      
+      String errorMessage = 'Error saving workout data';
+      if (e.toString().contains('permission-denied')) {
+        errorMessage = 'You don\'t have permission to save workout data';
+      } else if (e.toString().contains('auth')) {
+        errorMessage = 'Session expired. Please log in again';
+      }
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -272,6 +260,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
           Center(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              margin: const EdgeInsets.only(right: 16),
               decoration: BoxDecoration(
                 color: Colors.blue[100],
                 borderRadius: BorderRadius.circular(12),
@@ -285,7 +274,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
               ),
             ),
           ),
-          const SizedBox(width: 8),
           Center(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -346,7 +334,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
               padding: const EdgeInsets.all(16),
               children: [
                 Text(
-                  currentExercise.name,
+                  currentExercise.exercise.name,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -354,7 +342,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  currentExercise.description,
+                  currentExercise.exercise.description,
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontSize: 16,
@@ -362,7 +350,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                 ),
                 const SizedBox(height: 24),
                 ...List.generate(
-                  currentExercise.sets,
+                  currentExercise.config.sets,
                   (index) => Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: InkWell(
@@ -390,7 +378,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                             ),
                             const SizedBox(width: 16),
                             Text(
-                              '${currentExercise.reps} reps',
+                              '${currentExercise.config.reps} reps',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey[600],

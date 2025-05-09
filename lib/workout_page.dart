@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'pages/create_workout_page.dart';
 
 class WorkoutPage extends StatefulWidget {
   static const String routeName = '/workout';
@@ -71,12 +72,31 @@ class _WorkoutPageState extends State<WorkoutPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Workouts',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Workouts',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const CreateWorkoutPage()),
+                          );
+                        },
+                        icon: const Icon(Icons.add),
+                        label: const Text('Create'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF4285F4),
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -159,6 +179,16 @@ class WorkoutCard extends StatelessWidget {
     Key? key,
     required this.workout,
   }) : super(key: key);
+
+  // Calculate total duration (estimating 1 minute per set)
+  int get estimatedDuration {
+    return workout.exercises.fold(0, (sum, exercise) => sum + exercise.config.sets);
+  }
+
+  // Calculate total calories
+  int get totalCalories {
+    return workout.exercises.fold(0, (sum, exercise) => sum + exercise.config.calories);
+  }
 
   Future<File> _getImageFile(String assetPath) async {
     final directory = await getApplicationDocumentsDirectory();
@@ -292,7 +322,7 @@ class WorkoutCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  workout.description,
+                  '${workout.exercises.length} exercises',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -304,7 +334,7 @@ class WorkoutCard extends StatelessWidget {
                     Icon(Icons.timer_outlined, size: 16, color: Colors.blue[600]),
                     const SizedBox(width: 4),
                     Text(
-                      '${workout.duration} min',
+                      '$estimatedDuration min',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     const SizedBox(width: 16),
@@ -313,7 +343,7 @@ class WorkoutCard extends StatelessWidget {
                          color: Colors.orange[600]),
                     const SizedBox(width: 4),
                     Text(
-                      '${workout.calories} cal',
+                      '$totalCalories cal',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     const Spacer(),
