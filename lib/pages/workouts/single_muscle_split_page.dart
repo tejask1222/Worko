@@ -5,9 +5,23 @@ import '../../active_workout_page.dart';
 import '../../services/workout_instructions_service.dart';
 
 class SingleMuscleSplitPage extends StatelessWidget {
-  static const List<String> dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  static const List<String> muscleGroups = ['Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders', 'Legs'];
-  
+  static const List<String> dayNames = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+  static const List<String> muscleGroups = [
+    'Chest',
+    'Back',
+    'Biceps',
+    'Triceps',
+    'Shoulders',
+    'Legs',
+  ];
+
   final String difficulty;
   final int dayIndex;
 
@@ -16,54 +30,159 @@ class SingleMuscleSplitPage extends StatelessWidget {
     required this.difficulty,
     required this.dayIndex,
   }) : super(key: key);
-  
+
   List<WorkoutExercise> _getExercises() {
     final muscleGroup = muscleGroups[dayIndex];
     final exercises = _getMuscleGroupExercises(muscleGroup);
-    return exercises.map((exercise) => WorkoutExercise(
-      exercise: exercise,
-      config: _getExerciseConfig(exercise),
-    )).toList();
+    return exercises
+        .map(
+          (exercise) => WorkoutExercise(
+            exercise: exercise,
+            config: _getExerciseConfig(exercise),
+          ),
+        )
+        .toList();
   }
 
   List<Exercise> _getMuscleGroupExercises(String muscleGroup) {
-    final muscleCategory = muscleGroup == 'Biceps' || muscleGroup == 'Triceps' ? 'Arms' : muscleGroup;
-    final exercises = ExerciseLibraryService.getExercisesByMuscleGroup(muscleCategory);
+    final muscleCategory =
+        muscleGroup == 'Biceps' || muscleGroup == 'Triceps'
+            ? 'Arms'
+            : muscleGroup;
+    final exercises = ExerciseLibraryService.getExercisesByMuscleGroup(
+      muscleCategory,
+    );
     final exerciseIds = _getExerciseIdsForLevel(muscleGroup);
-    
+
     return exerciseIds.map((id) => _getExercise(exercises, id)).toList();
   }
 
   List<String> _getExerciseIdsForLevel(String muscleGroup) {
     switch (muscleGroup) {
       case 'Chest':
-        return difficulty.toLowerCase() == 'beginner' 
-          ? ['barbell benchpresss', 'incline_dumbbell_press', 'cable_chest_fly']
-          : difficulty.toLowerCase() == 'intermediate'
-            ? ['barbell benchpresss', 'incline_dumbbell_press', 'dumbbell_pullover', 'cable_chest_fly']
-            : ['barbell benchpresss', 'incline_dumbbell_press', 'decline_bench_press', 'dumbbell_pullover', 'chest_dips', 'cable_chest_fly'];
+        return difficulty.toLowerCase() == 'beginner'
+            ? [
+              'barbell benchpresss',
+              'incline_dumbbell_press',
+              'cable_chest_fly',
+            ]
+            : difficulty.toLowerCase() == 'intermediate'
+            ? [
+              'barbell benchpresss',
+              'incline_dumbbell_press',
+              'dumbbell_pullover',
+              'cable_chest_fly',
+            ]
+            : [
+              'barbell benchpresss',
+              'incline_dumbbell_press',
+              'decline_bench_press',
+              'dumbbell_pullover',
+              'chest_dips',
+              'cable_chest_fly',
+            ];
       case 'Back':
         return difficulty.toLowerCase() == 'beginner'
-          ? ['lat_pulldown', 'seated_cable_row', 'dumbbell_row']
-          : difficulty.toLowerCase() == 'intermediate'
-            ? ['deadlift', 'lat_pulldown', 'dumbbell_row', 'seated_cable_row']
-            : ['deadlift', 'bent_over_row', 'pullups', 'seated_cable_row'];
+            ? ['lat_pulldown', 'seated_cable_row', 'dumbbell_row']
+            : difficulty.toLowerCase() == 'intermediate'
+            ? ['deadlifts', 'lat_pulldown', 'dumbbell_row', 'seated_cable_row']
+            : [
+              'deadlifts',
+              'pull_ups',
+              'tbar_row',
+              'straight_arm_pulldown',
+              'dumbbell_row',
+              'seated_cable_row',
+            ];
+      case 'Biceps':
+        return difficulty.toLowerCase() == 'beginner'
+            ? ['barbell_curl', 'hammer_curl', 'concentration_curl']
+            : difficulty.toLowerCase() == 'intermediate'
+            ? [
+              'barbell_curl',
+              'preacher_curl',
+              'incline_dumbbell_curl',
+              'cable_curl',
+            ]
+            : [
+              'barbell_curl',
+              'preacher_curl',
+              'incline_dumbbell_curl',
+              'hammer_curl',
+              'spider_curl',
+              'cable_curl',
+            ];
+      case 'Triceps':
+        return difficulty.toLowerCase() == 'beginner'
+            ? ['tricep_pushdowns', 'skull_crushers', 'tricep_kickbacks']
+            : difficulty.toLowerCase() == 'intermediate'
+            ? [
+              'close_grip_bench_press',
+              'skull_crushers',
+              'overhead_tricep_extension',
+              'tricep_pushdowns',
+            ]
+            : [
+              'close_grip_bench_press',
+              'skull_crushers',
+              'tricep_pushdowns',
+              'overhead_cable_extension',
+              'overhead_tricep_extension',
+              'tricep_kickbacks',
+            ];
+      case 'Shoulders':
+        return difficulty.toLowerCase() == 'beginner'
+            ? ['barbell_overhead_press', 'lateralRaises', 'rear_delt_fly']
+            : difficulty.toLowerCase() == 'intermediate'
+            ? [
+              'dumbbell_shoulder_press',
+              'arnold_press',
+              'lateralRaises',
+              'rear_delt_fly',
+            ]
+            : [
+              'barbell_overhead_press',
+              'dumbbell_shoulder_press',
+              'arnold_press',
+              'lateralRaises',
+              'front_raise',
+              'rear_delt_fly',
+            ];
       case 'Legs':
         return difficulty.toLowerCase() == 'beginner'
-          ? ['squats', 'leg_press', 'leg_curl', 'leg_extension']
-          : difficulty.toLowerCase() == 'intermediate'
             ? ['squats', 'leg_press', 'leg_curl', 'leg_extension']
-            : ['squats', 'front_squat', 'leg_press', 'romanian_deadlift', 'leg_curl', 'leg_extension'];
+            : difficulty.toLowerCase() == 'intermediate'
+            ? ['squats', 'leg_press', 'leg_curl', 'leg_extension']
+            : [
+              'squats',
+              'front_squat',
+              'leg_press',
+              'romanian_deadlift',
+              'leg_curl',
+              'leg_extension',
+            ];
       default:
         return [];
     }
   }
 
   Exercise _getExercise(List<Exercise> exercises, String exerciseId) {
-    return exercises.firstWhere(
-      (e) => e.id == exerciseId,
-      orElse: () => exercises.first,
-    );
+    try {
+      return exercises.firstWhere(
+        (e) => e.id == exerciseId,
+        orElse: () => throw Exception('Exercise $exerciseId not found'),
+      );
+    } catch (e) {
+      print('Warning: Could not find exercise with ID: $exerciseId');
+      // Return the first exercise but with a modified name to indicate the error
+      return Exercise(
+        id: exerciseId,
+        name: 'Error: $exerciseId not found',
+        description: 'Exercise not found in library',
+        targetMuscles: 'Unknown',
+        imageUrl: exercises.first.imageUrl,
+      );
+    }
   }
 
   ExerciseConfig _getExerciseConfig(Exercise exercise) {
@@ -79,38 +198,48 @@ class SingleMuscleSplitPage extends StatelessWidget {
           reps: 8,
           calories: exercise.targetMuscles.contains('Cardio') ? 150 : 90,
         );
-    }  }
+    }
+  }
 
   Workout _buildWorkout() {
-    final dailyDuration = difficulty.toLowerCase() == 'beginner' ? 30
-                       : difficulty.toLowerCase() == 'intermediate' ? 45
-                       : 60;
-    
+    final dailyDuration =
+        difficulty.toLowerCase() == 'beginner'
+            ? 30
+            : difficulty.toLowerCase() == 'intermediate'
+            ? 45
+            : 60;
+
     return Workout(
       id: '${difficulty.toLowerCase()}_single_muscle_${dayIndex + 1}',
       title: '${dayNames[dayIndex]} - ${muscleGroups[dayIndex]} ($difficulty)',
-      description: 'Day ${dayIndex + 1} of 6-day $difficulty single muscle split focusing on ${muscleGroups[dayIndex]}',
+      description:
+          'Day ${dayIndex + 1} of 6-day $difficulty single muscle split focusing on ${muscleGroups[dayIndex]}',
       category: 'Strength',
       difficulty: difficulty,
-      imageUrl: 'assets/images/workouts/${difficulty.toLowerCase()}_single_muscle.jpg',
+      imageUrl:
+          'assets/images/workouts/${difficulty.toLowerCase()}_single_muscle.jpg',
       exercises: _getExercises(),
       addedAt: DateTime.now(),
       customDuration: dailyDuration,
     );
   }
+
   int _calculateTotalCalories(List<WorkoutExercise> exercises) {
     return exercises.fold(0, (sum, exercise) => sum + exercise.config.calories);
   }
 
   int _calculateEstimatedDuration(List<WorkoutExercise> exercises) {
-    final totalSets = exercises.fold(0, (sum, exercise) => sum + exercise.config.sets);
+    final totalSets = exercises.fold(
+      0,
+      (sum, exercise) => sum + exercise.config.sets,
+    );
     return (totalSets * 1.5).round(); // 1.5 minutes per set including rest
   }
 
   @override
   Widget build(BuildContext context) {
     final workout = _buildWorkout();
-    
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -120,10 +249,7 @@ class SingleMuscleSplitPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          workout.title,
-          style: const TextStyle(color: Colors.black),
-        ),
+        title: Text(workout.title, style: const TextStyle(color: Colors.black)),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -140,9 +266,11 @@ class SingleMuscleSplitPage extends StatelessWidget {
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(width: 24),
-                  Icon(Icons.local_fire_department_outlined, 
-                       size: 20, 
-                       color: Colors.orange[600]),
+                  Icon(
+                    Icons.local_fire_department_outlined,
+                    size: 20,
+                    color: Colors.orange[600],
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     '${_calculateTotalCalories(workout.exercises)} cal',
@@ -150,7 +278,10 @@ class SingleMuscleSplitPage extends StatelessWidget {
                   ),
                   const SizedBox(width: 24),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.blue.shade50,
                       borderRadius: BorderRadius.circular(12),
@@ -170,10 +301,7 @@ class SingleMuscleSplitPage extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'Exercises',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
             ListView.builder(
@@ -192,7 +320,9 @@ class SingleMuscleSplitPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ClipRRect(
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(16),
+                        ),
                         child: Image.asset(
                           exercise.exercise.imageUrl,
                           width: double.infinity,
@@ -232,9 +362,18 @@ class SingleMuscleSplitPage extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                _buildDetail('Sets', exercise.config.sets.toString()),
-                                _buildDetail('Reps', exercise.config.reps.toString()),
-                                _buildDetail('Calories', '${exercise.config.calories}'),
+                                _buildDetail(
+                                  'Sets',
+                                  exercise.config.sets.toString(),
+                                ),
+                                _buildDetail(
+                                  'Reps',
+                                  exercise.config.reps.toString(),
+                                ),
+                                _buildDetail(
+                                  'Calories',
+                                  '${exercise.config.calories}',
+                                ),
                               ],
                             ),
                           ],
@@ -291,20 +430,11 @@ class SingleMuscleSplitPage extends StatelessWidget {
   Widget _buildDetail(String label, String value) {
     return Column(
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 14,
-          ),
-        ),
+        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ],
     );

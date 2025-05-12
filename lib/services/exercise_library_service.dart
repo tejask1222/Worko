@@ -205,9 +205,8 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         imageUrl: 'assets/images/workouts/hack_squat.jpg',
       ),
     ],
-    'Back': [
-      Exercise(
-        id: 'pullups',
+    'Back': [      Exercise(
+        id: 'pull_ups',
         name: 'Pull-ups',
         description: 'An upper body exercise that targets your back and biceps',
         targetMuscles: 'Back, Biceps',

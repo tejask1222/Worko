@@ -10,6 +10,8 @@ import 'progress_page.dart';
 import 'upgrade_page.dart';
 import 'settings_page.dart';
 import 'workout_detail_page.dart';
+import 'pages/single_muscle_selection_page.dart';
+import 'pages/ppl_day_selection_page.dart';
 import 'providers/avatar_provider.dart';
 import 'providers/user_provider.dart';
 import 'providers/achievement.dart';
@@ -443,14 +445,28 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildWorkoutCard(Workout workout) {
+    bool isSingleMuscleWorkout = workout.id.startsWith('5') || workout.id.startsWith('6') || workout.id.startsWith('7');
+    bool isPPLWorkout = workout.id.startsWith('8') || workout.id.startsWith('9') || workout.id.startsWith('10');
+
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => WorkoutDetailPage(workout: workout),
-          ),
-        );
+        if (isSingleMuscleWorkout || isPPLWorkout) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => isPPLWorkout
+                  ? PPLDaySelectionPage(difficulty: workout.difficulty)
+                  : SingleMuscleSelectionPage(difficulty: workout.difficulty),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WorkoutDetailPage(workout: workout),
+            ),
+          );
+        }
       },
       child: Card(
         margin: const EdgeInsets.only(bottom: 16),
