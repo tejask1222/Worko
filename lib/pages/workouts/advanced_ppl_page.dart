@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../models/workout.dart';
 import '../../services/exercise_library_service.dart';
+import '../../services/exercise_service.dart';
 import '../../active_workout_page.dart';
 import '../../services/workout_instructions_service.dart';
 
 class AdvancedPPLPage extends StatelessWidget {
-  static const List<String> dayNames = ['Monday', 'Tuesday', 'Wednesday'];
-  static const List<String> splitTypes = ['Push', 'Pull', 'Legs'];
+  static const List<String> dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  static const List<String> splitTypes = ['Push', 'Pull', 'Legs', 'Push', 'Pull', 'Legs'];
   
   final int dayIndex;
 
@@ -26,46 +27,39 @@ class AdvancedPPLPage extends StatelessWidget {
 
   List<Exercise> _getSplitExercises(String splitType) {
     final exercises = ExerciseLibraryService.getExercisesByMuscleGroup(splitType);
-    final exerciseIds = _getExerciseIdsForSplit(splitType);
+    final exerciseIds = _getExerciseIdsForType(splitType);
     
     return exerciseIds.map((id) => _getExercise(exercises, id)).toList();
   }
 
-  List<String> _getExerciseIdsForSplit(String splitType) {
+  List<String> _getExerciseIdsForType(String splitType) {
     switch (splitType) {
       case 'Push':
         return [
           'barbell_benchpress',
           'incline_dumbbell_press',
-          'cable_chest_fly',
-          'chest_dips',
-          'skull_crushers',
+          'decline_bench_press',
           'tricep_pushdowns',
-          'close_grip_bench_press',
-          'overhead_tricep_extension'
+          'skull_crushers',
+          'tricep_kickbacks',
         ];
       case 'Pull':
         return [
-          'deadlifts',
-          'bent_over_row',
-          'pullups',
+          'latPulldown',
           'seated_cable_row',
+          'barbell_row',
+          'dumbbell_row',
           'barbell_curl',
-          'incline_dumbbell_curl',
-          'preacher_curl',
-          'cable_curl'
+          'hammer_curl',
         ];
       case 'Legs':
         return [
           'squats',
-          'romanian_deadlifts',
+          'front_squats',
           'leg_press',
-          'standing_calf_raises',
-          'dumbbell_shoulder_press',
-          'arnold_press',
+          'romanian_deadlift',
+          'barbell_overhead_press',
           'lateralRaises',
-          'upright_row',
-          'front_raise'
         ];
       default:
         return [];
@@ -80,57 +74,11 @@ class AdvancedPPLPage extends StatelessWidget {
   }
 
   ExerciseConfig _getExerciseConfig(Exercise exercise) {
-    final primaryCompound = [
-      'barbell_benchpress',
-      'deadlifts',
-      'squats',
-    ].contains(exercise.id);
-
-    final secondaryCompound = [
-      'romanian_deadlifts',
-      'bent_over_row',
-      'dumbbell_shoulder_press',
-      'close_grip_bench_press',
-    ].contains(exercise.id);
-
-    if (primaryCompound) {
-      return ExerciseConfig(sets: 5, reps: 6, calories: _getCaloriesForExercise(exercise.id));
-    } else if (secondaryCompound) {
-      return ExerciseConfig(sets: 4, reps: 8, calories: _getCaloriesForExercise(exercise.id));
-    } else {
-      return ExerciseConfig(sets: 4, reps: 10, calories: _getCaloriesForExercise(exercise.id));
-    }
-  }
-
-  int _getCaloriesForExercise(String exerciseId) {
-    final caloriesMap = {
-      'barbell_benchpress': 60,
-      'incline_dumbbell_press': 50,
-      'cable_chest_fly': 40,
-      'chest_dips': 40,
-      'skull_crushers': 35,
-      'tricep_pushdowns': 30,
-      'close_grip_bench_press': 35,
-      'overhead_tricep_extension': 30,
-      'deadlifts': 70,
-      'bent_over_row': 50,
-      'pullups': 45,
-      'seated_cable_row': 40,
-      'barbell_curl': 35,
-      'incline_dumbbell_curl': 30,
-      'preacher_curl': 30,
-      'cable_curl': 30,
-      'squats': 65,
-      'romanian_deadlifts': 55,
-      'leg_press': 45,
-      'standing_calf_raises': 30,
-      'dumbbell_shoulder_press': 35,
-      'arnold_press': 30,
-      'lateralRaises': 25,
-      'upright_row': 25,
-      'front_raise': 20,
-    };
-    return caloriesMap[exerciseId] ?? 40;
+    return ExerciseConfig(
+      sets: 5,
+      reps: 8,
+      calories: 2430 ~/ _getExerciseIdsForType(splitTypes[dayIndex]).length, // Distribute 2430 calories evenly
+    );
   }
 
   String _getSplitDescription(String splitType) {
@@ -157,16 +105,8 @@ class AdvancedPPLPage extends StatelessWidget {
       imageUrl: 'assets/images/workouts/advanced_ppl.jpg',
       exercises: _getExercises(),
       addedAt: DateTime.now(),
-      customDuration: 75,
+      customDuration: 440, // 440 minutes for advanced PPL workouts
     );
-  }
-
-  int _calculateTotalCalories(List<WorkoutExercise> exercises) {
-    return exercises.fold(0, (sum, exercise) => sum + exercise.config.calories);
-  }
-
-  int _calculateEstimatedDuration(List<WorkoutExercise> exercises) {
-    return 75; // Fixed 75 minutes for advanced workouts
   }
 
   @override
@@ -189,7 +129,7 @@ class AdvancedPPLPage extends StatelessWidget {
                   Icon(Icons.timer_outlined, size: 20, color: Colors.blue[600]),
                   const SizedBox(width: 8),
                   Text(
-                    '${_calculateEstimatedDuration(workout.exercises)} min',
+                    '${workout.customDuration} min',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(width: 24),
@@ -198,7 +138,7 @@ class AdvancedPPLPage extends StatelessWidget {
                        color: Colors.orange[600]),
                   const SizedBox(width: 8),
                   Text(
-                    '${_calculateTotalCalories(workout.exercises)} cal',
+                    '${2430} cal',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
@@ -241,19 +181,6 @@ class AdvancedPPLPage extends StatelessWidget {
               itemCount: workout.exercises.length,
               itemBuilder: (context, index) {
                 final exercise = workout.exercises[index];
-                final isPrimaryCompound = [
-                  'barbell_benchpress',
-                  'deadlifts',
-                  'squats',
-                ].contains(exercise.exercise.id);
-
-                final isSecondaryCompound = [
-                  'romanian_deadlifts',
-                  'bent_over_row',
-                  'dumbbell_shoulder_press',
-                  'close_grip_bench_press',
-                ].contains(exercise.exercise.id);
-
                 return Card(
                   margin: const EdgeInsets.only(bottom: 16),
                   child: Padding(
@@ -279,16 +206,9 @@ class AdvancedPPLPage extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _buildDetail('Sets', isPrimaryCompound ? '5' : '4'),
-                            _buildDetail(
-                              'Reps', 
-                              isPrimaryCompound ? '6' : 
-                              isSecondaryCompound ? '8' : '10'
-                            ),
-                            _buildDetail(
-                              'Rest',
-                              isPrimaryCompound || isSecondaryCompound ? '2-3m' : '1-2m'
-                            ),
+                            _buildDetail('Sets', '5'),
+                            _buildDetail('Reps', '8'),
+                            _buildDetail('Rest', '2-3m'),
                           ],
                         ),
                       ],

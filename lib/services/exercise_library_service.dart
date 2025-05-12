@@ -17,6 +17,20 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         imageUrl: 'assets/images/workouts/benchpress.jpg',
       ),
       Exercise(
+        id: 'bench_press',
+        name: 'Bench Press',
+        description: 'A fundamental chest exercise that builds upper body strength',
+        targetMuscles: 'Chest, Shoulders, Triceps',
+        imageUrl: 'assets/images/workouts/bench_press.jpg',
+      ),
+      Exercise(
+        id: 'dumbbell_bench_press',
+        name: 'Dumbbell Bench Press',
+        description: 'A fundamental chest exercise that builds upper body strength',
+        targetMuscles: 'Chest, Shoulders, Triceps',
+        imageUrl: 'assets/images/workouts/dumbbell_bench_press.jpg',
+      ),
+      Exercise(
         id: 'dips',
         name: 'Dips',
         description: 'A bodyweight exercise that targets chest and triceps',
@@ -114,6 +128,13 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         imageUrl: 'assets/images/workouts/incline_barbell_press.jpg',
       ),
       Exercise(
+        id: 'incline_bench_press',
+        name: 'Incline Bench Press',
+        description: 'A compound exercise targeting the upper chest',
+        targetMuscles: 'Chest, Shoulders, Triceps',
+        imageUrl: 'assets/images/workouts/incline_bench_press.jpg',
+      ),
+      Exercise(
         id: 'reverse_pec_deck',
         name: 'Reverse Pec Deck',
         description: 'A machine exercise targeting the rear deltoids and upper back',
@@ -127,6 +148,13 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         description: 'A foundational lower body exercise that builds strength and stability',
         targetMuscles: 'Quadriceps, Hamstrings, Glutes',
         imageUrl: 'assets/images/workouts/squat.jpg',
+      ),
+      Exercise(
+        id: 'bulgarian_split_squat',
+        name: 'Bulgarian Split Squats',
+        description: 'A a foundational unilateral lower body exercise that builds strength, balance, and stability, primarily targeting the quads, glutes, and hamstrings.',
+        targetMuscles: 'Quadriceps, Hamstrings, Glutes',
+        imageUrl: 'assets/images/workouts/bulgarian_split_squat.jpg',
       ),
       Exercise(
         id: 'back_squat',
@@ -148,6 +176,13 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         description: 'A machine compound exercise for lower body development',
         targetMuscles: 'Quadriceps, Hamstrings, Glutes',
         imageUrl: 'assets/images/workouts/leg_press.jpg',
+      ),
+      Exercise(
+        id: 'leg_extension',
+        name: 'Leg Extension',
+        description: 'A isolation exercise primarily targeting the quadriceps muscles of the front thigh',
+        targetMuscles: 'Quadriceps, Hamstrings, Glutes',
+        imageUrl: 'assets/images/workouts/leg_extension.jpg',
       ),
       Exercise(
         id: 'romanian_deadlift',
@@ -205,12 +240,20 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         imageUrl: 'assets/images/workouts/hack_squat.jpg',
       ),
     ],
-    'Back': [      Exercise(
-        id: 'pull_ups',
+    'Back': [
+      Exercise(
+        id: 'pullups',
         name: 'Pull-ups',
         description: 'An upper body exercise that targets your back and biceps',
         targetMuscles: 'Back, Biceps',
         imageUrl: 'assets/images/workouts/pullup.jpg',
+      ),
+      Exercise(
+        id: 'pull_ups',
+        name: 'Pull-ups',
+        description: 'An upper body exercise that targets your back and biceps',
+        targetMuscles: 'Back, Biceps',
+        imageUrl: 'assets/images/workouts/pullups.jpg',
       ),
       Exercise(
         id: 'rows',
@@ -294,13 +337,6 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         description: 'A back exercise with upper body support for strict form',
         targetMuscles: 'Back, Biceps',
         imageUrl: 'assets/images/workouts/chest_supported_row.jpg',
-      ),
-      Exercise(
-        id: 'bent_over_row',
-        name: 'Bent Over Row',
-        description: 'A compound barbell movement targeting back thickness and strength',
-        targetMuscles: 'Back, Biceps, Core',
-        imageUrl: 'assets/images/workouts/bent_over_row.jpg',
       ),
       Exercise(
         id: 'meadows_row',
@@ -550,6 +586,13 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         description: 'An isolation movement targeting the triceps through extension',
         targetMuscles: 'Triceps',
         imageUrl: 'assets/images/workouts/tricep_kickbacks.jpg',
+      ),
+      Exercise(
+        id: 'zottman_curl',
+        name: 'Zottman Curl',
+        description: 'A comprehensive bicep and forearm exercise.',
+        targetMuscles: 'Biceps, Forearms',
+        imageUrl: 'assets/images/workouts/zottman_curl.jpg',
       ),
     ],
     'Cardio': [

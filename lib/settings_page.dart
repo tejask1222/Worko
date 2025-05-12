@@ -14,6 +14,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final _nameController = TextEditingController();
+  final _scrollController = ScrollController();
   final _auth = FirebaseAuth.instance;
   bool _isLoading = false;
 
@@ -30,6 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void dispose() {
     _nameController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -223,6 +225,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final avatarProvider = Provider.of<AvatarProvider>(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Settings'),
         leading: IconButton(
@@ -232,142 +235,145 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 30),
-                Center(
-                  child: Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.grey[200],
-                        backgroundImage: avatarProvider.currentAvatar != null 
-                            ? AssetImage(avatarProvider.currentAvatar!)
-                            : null,
-                        child: avatarProvider.currentAvatar == null
-                            ? Icon(Icons.person, size: 50, color: Colors.grey[600])
-                            : null,
-                      ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: GestureDetector(
-                          onTap: _showAvatarPicker,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
-                            ),
-                            child: const Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
-                              size: 16,
+          SingleChildScrollView(
+            controller: _scrollController,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 30),
+                  Center(
+                    child: Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.grey[200],
+                          backgroundImage: avatarProvider.currentAvatar != null 
+                              ? AssetImage(avatarProvider.currentAvatar!)
+                              : null,
+                          child: avatarProvider.currentAvatar == null
+                              ? Icon(Icons.person, size: 50, color: Colors.grey[600])
+                              : null,
+                        ),
+                        Positioned(
+                          right: 0,
+                          bottom: 0,
+                          child: GestureDetector(
+                            onTap: _showAvatarPicker,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 2),
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 16,
+                              ),
                             ),
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Name',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          hintText: 'John Doe',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setState(() {}); 
+                        },
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 30),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Name',
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: _isLoading ? null : _updateProfile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Save Changes',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    onPressed: _isLoading ? null : _logout,
+                    icon: const Icon(Icons.logout, color: Colors.red),
+                    label: const Text(
+                      'Log Out',
                       style: TextStyle(
+                        color: Colors.red,
                         fontSize: 16,
-                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        hintText: 'John Doe',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.red),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      onChanged: (value) {
-                        // Real-time update if needed
-                        setState(() {}); 
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _updateProfile,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Save Changes',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                OutlinedButton.icon(
-                  onPressed: _isLoading ? null : _logout,
-                  icon: const Icon(Icons.logout, color: Colors.red),
-                  label: const Text(
-                    'Log Out',
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.red),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                  const SizedBox(height: 24),
+                  OutlinedButton.icon(
+                    onPressed: _isLoading ? null : _deleteAccount,
+                    icon: const Icon(Icons.delete_forever, color: Colors.red),
+                    label: const Text(
+                      'Delete Account',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.red),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                OutlinedButton.icon(
-                  onPressed: _isLoading ? null : _deleteAccount,
-                  icon: const Icon(Icons.delete_forever, color: Colors.red),
-                  label: const Text(
-                    'Delete Account',
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.red),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-              ],
+                  const SizedBox(height: 100), // Add extra padding at the bottom
+                ],
+              ),
             ),
           ),
           if (_isLoading)

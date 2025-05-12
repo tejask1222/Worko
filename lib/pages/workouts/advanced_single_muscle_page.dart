@@ -89,11 +89,12 @@ class AdvancedSingleMusclePage extends StatelessWidget {
   }
 
   ExerciseConfig _getExerciseConfig(Exercise exercise) {
-    // Advanced configuration: 5 sets, 8 reps
+    // Advanced configuration: 5 sets, 8 reps with fixed calories
+    final int exerciseCalories = 3240 ~/ (_exerciseIds[muscleGroups[dayIndex]] ?? []).length; // Distribute calories evenly
     return ExerciseConfig(
       sets: 5,
       reps: 8,
-      calories: exercise.targetMuscles.contains('Cardio') ? 150 : 90,
+      calories: exerciseCalories,
     );
   }
 
@@ -109,7 +110,7 @@ class AdvancedSingleMusclePage extends StatelessWidget {
       imageUrl: 'assets/images/workouts/advanced_single_muscle.jpg',
       exercises: _getExercises(),
       addedAt: DateTime.now(),
-      customDuration: 60, // 60 minutes for advanced workouts
+      customDuration: 440, // Fixed 440 minutes for advanced workouts
     );
   }
 

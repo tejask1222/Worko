@@ -43,6 +43,7 @@ dependencies:
   flutter_cache_manager: ^3.3.1
   shared_preferences: ^2.5.3  # For storing achievement progress
   lottie: ^3.1.0  # For achievement unlock animations
+  share_plus: ^7.2.2  # For sharing achievements
 
 dev_dependencies:
   flutter_test:
@@ -160,6 +161,14 @@ flutter:
     - assets/images/workouts/incline_barbell_press.jpg
     - assets/images/workouts/machine_row.jpg
     - assets/images/workouts/cable_rear_fly.jpg
+    - assets/images/workouts/pullups.jpg
+    - assets/images/workouts/barbell_row.jpg
+    - assets/images/workouts/dumbbell_bench_press.jpg
+    - assets/images/workouts/incline_bench_press.jpg
+    - assets/images/workouts/meadows_row.jpg
+    - assets/images/workouts/hack_squat.jpg
+    - assets/images/workouts/bulgarian_split_squat.jpg
+    - assets/images/workouts/military_press.jpg
 
 
     

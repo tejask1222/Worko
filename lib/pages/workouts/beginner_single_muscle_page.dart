@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/workout.dart';
 import '../../services/exercise_library_service.dart';
+import '../../services/exercise_service.dart';
 import '../../active_workout_page.dart';
 import '../../services/workout_instructions_service.dart';
 
@@ -45,7 +46,7 @@ class BeginnerSingleMusclePage extends StatelessWidget {
       case 'Shoulders':
         return ['barbell_overhead_press', 'lateralRaises', 'rear_delt_fly'];
       case 'Legs':
-        return ['squats', 'leg_press', 'leg_extension'];
+        return ['squats', 'leg_press', 'leg_curl'];
       default:
         return [];
     }
@@ -57,14 +58,16 @@ class BeginnerSingleMusclePage extends StatelessWidget {
       orElse: () => exercises.first,
     );
   }
-
   ExerciseConfig _getExerciseConfig(Exercise exercise) {
+    final exerciseIds = _getExerciseIdsForGroup(muscleGroups[dayIndex]);
+    final int caloriesPerExercise = 900 ~/ exerciseIds.length; // Distribute 900 calories evenly
     return ExerciseConfig(
       sets: 3,
       reps: 12,
-      calories: exercise.targetMuscles.contains('Cardio') ? 70 : 50,
+      calories: caloriesPerExercise,
     );
   }
+
   Workout _buildWorkout() {
     return Workout(
       id: 'beginner_single_muscle_${dayIndex + 1}',
@@ -72,20 +75,17 @@ class BeginnerSingleMusclePage extends StatelessWidget {
       description: 'Day ${dayIndex + 1} of 6-day beginner single muscle split focusing on ${muscleGroups[dayIndex]}',
       category: 'Strength',
       difficulty: 'Beginner',
-      imageUrl: 'assets/images/workouts/beginner_single_muscle.jpg',
-      exercises: _getExercises(),
+      imageUrl: 'assets/images/workouts/beginner_single_muscle.jpg',      exercises: _getExercises(),
       addedAt: DateTime.now(),
-      customDuration: 30, // 30 minutes for beginner workouts
+      customDuration: 120, // 120 minutes for beginner workouts
     );
   }
 
   int _calculateTotalCalories(List<WorkoutExercise> exercises) {
-    return exercises.fold(0, (sum, exercise) => sum + exercise.config.calories);
+    return 900; // Fixed 900 calories for beginner workouts
   }
-
   int _calculateEstimatedDuration(List<WorkoutExercise> exercises) {
-    final totalSets = exercises.fold(0, (sum, exercise) => sum + exercise.config.sets);
-    return (totalSets * 2).round(); // 2 minutes per set for beginners (including rest)
+    return 120; // Fixed 120 minutes for beginner workouts
   }
 
   @override

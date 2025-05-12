@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'settings_page.dart';
 import 'providers/avatar_provider.dart';
 import 'providers/user_provider.dart';
@@ -39,59 +40,65 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildPremiumCard() {
-    return Container(
-      width: double.infinity,
+    return Card(
+      elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 16),
-      padding: const EdgeInsets.all(20.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFF4285F4),
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Upgrade to Premium',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Get access to advanced workout programs and exclusive features',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white70,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const UpgradePage()),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: const Color(0xFF4285F4),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-            ),
-            child: const Text(
-              'View Plans',
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20.0),
+        decoration: BoxDecoration(
+          color: const Color(0xFF4285F4),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Upgrade to Premium',
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            const Text(
+              'Get access to advanced workout programs and exclusive features',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white70,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const UpgradePage()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF4285F4),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              ),
+              child: const Text(
+                'View Plans',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -139,34 +146,54 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               )
             else
-              SizedBox(
-                height: 160,
-                child: ListView.builder(
-                  itemCount: unlockedAchievements.length,
-                  itemBuilder: (context, index) {
-                    final achievement = unlockedAchievements[index];
-                    return Card(
-                      elevation: 3,
-                      margin: const EdgeInsets.only(bottom: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: ListTile(
-                        leading: Text(
-                          achievement.icon,
-                          style: const TextStyle(fontSize: 24),
-                        ),
-                        title: Text(
-                          achievement.title,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(achievement.description),
-                        trailing: const Icon(Icons.share),
-                      ),
-                    );
-                  },
+              ...unlockedAchievements.map((achievement) => Card(
+                elevation: 3,
+                margin: const EdgeInsets.only(bottom: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
-              ),
+                child: ListTile(
+                  leading: Text(
+                    achievement.icon,
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  title: Text(
+                    achievement.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(achievement.description),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.share),
+                    onPressed: () async {
+                      final shareText = '🎯 I just earned the "${achievement.title}" achievement in my Workout App!\n'
+                          '${achievement.icon} ${achievement.description}\n'
+                          '#WorkoutApp #Fitness #Achievement';
+                      try {
+                        await Share.share(shareText);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Achievement shared successfully!'),
+                              backgroundColor: Colors.green,
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Could not share achievement: ${e.toString()}'),
+                              backgroundColor: Colors.red,
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ),
+              )).toList(),
           ],
         );
       },

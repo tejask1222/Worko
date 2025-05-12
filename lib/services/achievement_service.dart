@@ -11,28 +11,28 @@ class AchievementService {
     Achievement(
       id: 'first_step',
       title: 'First Step',
-      description: 'Complete your first workout',
+      description: 'Completed your first workout',
       icon: '🏅',
       requirementValue: 1,
     ),
     Achievement(
       id: 'streak_3',
       title: '3-Day Streak',
-      description: 'Complete workouts for 3 consecutive days',
+      description: 'Completed workouts for 3 consecutive days',
       icon: '🔥',
       requirementValue: 3,
     ),
     Achievement(
       id: 'streak_5',
       title: '5-Day Streak',
-      description: 'Complete workouts for 5 consecutive days',
+      description: 'Completed workouts for 5 consecutive days',
       icon: '🔥',
       requirementValue: 5,
     ),
     Achievement(
       id: 'streak_7',
       title: '7-Day Streak',
-      description: 'Complete workouts for 7 consecutive days',
+      description: 'Completed workouts for 7 consecutive days',
       icon: '🔥',
       requirementValue: 7,
     ),
@@ -46,42 +46,42 @@ class AchievementService {
     Achievement(
       id: 'push_pull_leg_beginner',
       title: 'Push Pull Leg Beginner',
-      description: 'Unlock the Push Pull Leg beginner workout',
+      description: 'Unlocked the Push Pull Leg beginner workout',
       icon: '🏋‍♂',
       requirementValue: 1,
     ),
     Achievement(
       id: 'single_muscle_beginner',
       title: 'Single Muscle Beginner',
-      description: 'Unlock the Single Muscle beginner workout',
+      description: 'Unlocked the Single Muscle beginner workout',
       icon: '💪',
       requirementValue: 1,
     ),
     Achievement(
       id: 'weekly_active_days',
       title: 'Weekly Active Days',
-      description: 'Complete your workouts on all active days of the week',
+      description: 'Completed your workouts on all active days of the week',
       icon: '📅',
-      requirementValue: 7,  // Will be updated based on user's goal
+      requirementValue: 5,  // Default value, will be updated based on user's goal
     ),
     Achievement(
       id: 'weekly_hours',
       title: 'Weekly Hours Completed',
-      description: 'Complete the required workout hours in a week',
+      description: 'Completed the required workout hours in a week',
       icon: '⏱',
       requirementValue: 5,  // Will be updated based on user's goal
     ),
     Achievement(
       id: 'weekly_calories',
       title: 'Weekly Calories Burned',
-      description: 'Burn the required number of calories in a week',
+      description: 'Burned the required number of calories in a week',
       icon: '🔥',
       requirementValue: 1000,  // Will be updated based on user's goal
     ),
     Achievement(
       id: 'complete_access',
       title: 'Complete Access',
-      description: 'Purchase full access to all features and workouts',
+      description: 'Purchased full access to all features and workouts',
       icon: '🔑',
       requirementValue: 1,
     ),
@@ -99,6 +99,10 @@ class AchievementService {
     final userId = _auth.currentUser?.uid;
     if (userId == null) return [];
 
+    final now = DateTime.now();
+    final weekStart = now.subtract(Duration(days: now.weekday - 1));
+    final weekKey = '${weekStart.year}-${weekStart.month}-${weekStart.day}';
+    
     // Get user goals to update requirement values
     final goalsRef = _database.ref('userGoals/$userId');
     final goalsSnapshot = await goalsRef.get();
@@ -109,7 +113,7 @@ class AchievementService {
       final weeklyActiveIndex = defaultAchievements.indexWhere((a) => a.id == 'weekly_active_days');
       if (weeklyActiveIndex != -1) {
         defaultAchievements[weeklyActiveIndex] = defaultAchievements[weeklyActiveIndex].copyWith(
-          requirementValue: goals['workoutDays'] ?? 7
+          requirementValue: goals['workoutDays'] ?? 5
         );
       }
       
@@ -128,23 +132,71 @@ class AchievementService {
       }
     }
 
+    // Always get fresh weekly stats
+    final weeklyStatsRef = _database.ref('weeklyStats/$userId/$weekKey');
+    final statsSnapshot = await weeklyStatsRef.get();
+    Map<String, dynamic>? stats;
+    
+    if (statsSnapshot.exists) {
+      stats = Map<String, dynamic>.from(statsSnapshot.value as Map);
+    }
+
     final achievementsRef = _database.ref('userAchievements/$userId');
     final snapshot = await achievementsRef.get();
+    List<Achievement> achievements;
 
     if (!snapshot.exists) {
       // Initialize default achievements for new users
-      for (var achievement in defaultAchievements) {
-        await saveAchievement(achievement);
-      }
-      return defaultAchievements;
+      achievements = List.from(defaultAchievements);
+    } else {
+      achievements = [];
+      final data = Map<String, dynamic>.from(snapshot.value as Map);
+      data.forEach((key, value) {
+        achievements.add(Achievement.fromJson(Map<String, dynamic>.from(value)));
+      });
     }
 
-    final achievements = <Achievement>[];
-    final data = Map<String, dynamic>.from(snapshot.value as Map);
-    
-    data.forEach((key, value) {
-      achievements.add(Achievement.fromJson(Map<String, dynamic>.from(value)));
-    });
+    // Always update weekly achievements with current stats
+    if (stats != null) {
+      // Update weekly active days achievement
+      final weeklyActiveDaysAchievement = achievements.firstWhere((a) => a.id == 'weekly_active_days');
+      final activeWorkoutDaysRaw = stats['activeWorkoutDays'];
+      int activeWorkoutDays = 0;
+      
+      if (activeWorkoutDaysRaw != null) {
+        if (activeWorkoutDaysRaw is List || activeWorkoutDaysRaw is Set) {
+          activeWorkoutDays = (activeWorkoutDaysRaw as dynamic).length;
+        } else {
+          activeWorkoutDays = activeWorkoutDaysRaw as int;
+        }
+        
+        achievements[achievements.indexOf(weeklyActiveDaysAchievement)] = weeklyActiveDaysAchievement.copyWith(
+          progress: activeWorkoutDays.toDouble(),
+          isUnlocked: activeWorkoutDays >= weeklyActiveDaysAchievement.requirementValue
+        );
+      }
+
+      // Update weekly hours achievement
+      final totalDuration = (stats['totalDuration'] as int? ?? 0) / 60.0;
+      final weeklyHoursAchievement = achievements.firstWhere((a) => a.id == 'weekly_hours');
+      achievements[achievements.indexOf(weeklyHoursAchievement)] = weeklyHoursAchievement.copyWith(
+        progress: totalDuration,
+        isUnlocked: totalDuration >= weeklyHoursAchievement.requirementValue
+      );
+
+      // Update weekly calories achievement
+      final totalCalories = stats['totalCalories'] as int? ?? 0;
+      final weeklyCaloriesAchievement = achievements.firstWhere((a) => a.id == 'weekly_calories');
+      achievements[achievements.indexOf(weeklyCaloriesAchievement)] = weeklyCaloriesAchievement.copyWith(
+        progress: totalCalories.toDouble(),
+        isUnlocked: totalCalories >= weeklyCaloriesAchievement.requirementValue
+      );
+
+      // Save the updated achievements
+      for (var achievement in achievements.where((a) => a.id.startsWith('weekly_'))) {
+        await saveAchievement(achievement);
+      }
+    }
 
     return achievements;
   }
@@ -233,8 +285,15 @@ class AchievementService {
   }
 
   Future<void> _checkWeeklyGoals(Map<String, dynamic> stats) async {
-    // Check weekly active days
-    final activeWorkoutDays = stats['activeWorkoutDays'] as int? ?? 0;
+    // Check weekly active days - handle both Set and direct integer storage
+    final activeWorkoutDaysRaw = stats['activeWorkoutDays'];
+    int activeWorkoutDays;
+    if (activeWorkoutDaysRaw is Set || activeWorkoutDaysRaw is List) {
+      activeWorkoutDays = (activeWorkoutDaysRaw as dynamic).length;
+    } else {
+      activeWorkoutDays = activeWorkoutDaysRaw as int? ?? 0;
+    }
+    
     final weeklyActiveDaysAchievement = defaultAchievements.firstWhere((a) => a.id == 'weekly_active_days');
     await saveAchievement(weeklyActiveDaysAchievement.copyWith(
       progress: activeWorkoutDays.toDouble(),

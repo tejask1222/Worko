@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../models/workout.dart';
 import '../../services/exercise_library_service.dart';
+import '../../services/exercise_service.dart';
 import '../../active_workout_page.dart';
 import '../../services/workout_instructions_service.dart';
 
 class IntermediatePPLPage extends StatelessWidget {
-  static const List<String> dayNames = ['Monday', 'Tuesday', 'Wednesday'];
-  static const List<String> splitTypes = ['Push', 'Pull', 'Legs'];
+  static const List<String> dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  static const List<String> splitTypes = ['Push', 'Pull', 'Legs', 'Push', 'Pull', 'Legs'];
   
   final int dayIndex;
 
@@ -26,40 +27,36 @@ class IntermediatePPLPage extends StatelessWidget {
 
   List<Exercise> _getSplitExercises(String splitType) {
     final exercises = ExerciseLibraryService.getExercisesByMuscleGroup(splitType);
-    final exerciseIds = _getExerciseIdsForSplit(splitType);
+    final exerciseIds = _getExerciseIdsForType(splitType);
     
     return exerciseIds.map((id) => _getExercise(exercises, id)).toList();
   }
 
-  List<String> _getExerciseIdsForSplit(String splitType) {
+  List<String> _getExerciseIdsForType(String splitType) {
     switch (splitType) {
       case 'Push':
         return [
           'barbell_benchpress',
           'incline_dumbbell_press',
-          'cable_chest_fly',
-          'skull_crushers',
+          'decline_bench_press',
           'tricep_pushdowns',
-          'overhead_tricep_extension'
+          'tricep_kickbacks',
         ];
       case 'Pull':
         return [
-          'deadlifts',
-          'pullups',
+          'latPulldown',
           'seated_cable_row',
+          'dumbbell_row',
           'barbell_curl',
-          'preacher_curl',
-          'hammer_curl'
+          'hammer_curl',
         ];
       case 'Legs':
         return [
           'squats',
-          'romanian_deadlifts',
-          'standing_calf_raises',
-          'dumbbell_shoulder_press',
-          'arnold_press',
+          'leg_press',
+          'romanian_deadlift',
+          'barbell_overhead_press',
           'lateralRaises',
-          'upright_row'
         ];
       default:
         return [];
@@ -74,44 +71,11 @@ class IntermediatePPLPage extends StatelessWidget {
   }
 
   ExerciseConfig _getExerciseConfig(Exercise exercise) {
-    final isCompound = [
-      'barbell_benchpress',
-      'deadlifts',
-      'squats',
-      'romanian_deadlifts',
-      'dumbbell_shoulder_press'
-    ].contains(exercise.id);
-
     return ExerciseConfig(
-      sets: isCompound ? 4 : 3,
-      reps: isCompound ? 8 : 12,
-      calories: _getCaloriesForExercise(exercise.id),
+      sets: 4,
+      reps: 10,
+      calories: 1650 ~/ _getExerciseIdsForType(splitTypes[dayIndex]).length, // Distribute 1650 calories evenly
     );
-  }
-
-  int _getCaloriesForExercise(String exerciseId) {
-    final caloriesMap = {
-      'barbell_benchpress': 50,
-      'incline_dumbbell_press': 45,
-      'cable_chest_fly': 40,
-      'skull_crushers': 35,
-      'tricep_pushdowns': 30,
-      'overhead_tricep_extension': 30,
-      'deadlifts': 60,
-      'pullups': 45,
-      'seated_cable_row': 40,
-      'barbell_curl': 35,
-      'preacher_curl': 30,
-      'hammer_curl': 30,
-      'squats': 60,
-      'romanian_deadlifts': 50,
-      'standing_calf_raises': 30,
-      'dumbbell_shoulder_press': 35,
-      'arnold_press': 30,
-      'lateralRaises': 25,
-      'upright_row': 25,
-    };
-    return caloriesMap[exerciseId] ?? 35;
   }
 
   String _getSplitDescription(String splitType) {
@@ -137,17 +101,17 @@ class IntermediatePPLPage extends StatelessWidget {
       difficulty: 'Intermediate',
       imageUrl: 'assets/images/workouts/intermediate_ppl.jpg',
       exercises: _getExercises(),
-      addedAt: DateTime.now(),
-      customDuration: 60,
+      addedAt: DateTime.now(),      customDuration: 300, // 300 minutes for intermediate PPL workouts
+      customCalories: 1650, // 1650 calories for intermediate PPL workouts
     );
   }
 
   int _calculateTotalCalories(List<WorkoutExercise> exercises) {
-    return exercises.fold(0, (sum, exercise) => sum + exercise.config.calories);
+    return 1650; // Fixed 1650 calories for intermediate PPL workouts
   }
 
   int _calculateEstimatedDuration(List<WorkoutExercise> exercises) {
-    return 60; // Fixed 60 minutes for intermediate workouts
+    return 300; // Fixed 300 minutes for intermediate PPL workouts
   }
 
   @override

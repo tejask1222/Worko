@@ -82,28 +82,54 @@ class IntermediateSingleMusclePage extends StatelessWidget {
     );
   }
 
+  List<String> _getExerciseIdsForGroup(String muscleGroup) {
+    switch (muscleGroup) {
+      case 'Chest':
+        return ['barbell_benchpress', 'incline_dumbbell_press', 'decline_bench_press', 'dumbbell_pullover'];
+      case 'Back':
+        return ['latPulldown', 'seated_cable_row', 'dumbbell_row', 'barbell_row'];
+      case 'Biceps':
+        return ['barbell_curl', 'hammer_curl', 'concentration_curl', 'preacher_curl'];
+      case 'Triceps':
+        return ['tricep_pushdowns', 'overhead_tricep_extension', 'skull_crushers', 'tricep_kickbacks'];
+      case 'Shoulders':
+        return ['barbell_overhead_press', 'arnold_press', 'lateralRaises', 'rear_delt_fly'];
+      case 'Legs':
+        return ['squats', 'leg_press', 'romanian_deadlift', 'leg_extension', 'leg_curl'];
+      default:
+        return [];
+    }
+  }
+
   ExerciseConfig _getExerciseConfig(Exercise exercise) {
-    // Intermediate configuration: 4 sets, 10 reps
+    // Intermediate configuration: 4 sets, 10 reps with fixed calories
+    final int exerciseCalories = 1680 ~/ _getExerciseIdsForGroup(muscleGroups[dayIndex]).length;
     return ExerciseConfig(
       sets: 4,
       reps: 10,
-      calories: exercise.targetMuscles.contains('Cardio') ? 120 : 70,
+      calories: exerciseCalories, // Evenly distribute 1680 calories across exercises
     );
   }
 
-  Workout _buildWorkout() {
-    final muscleGroup = muscleGroups[dayIndex];
-    
-    return Workout(
+  int _calculateTotalCalories(List<WorkoutExercise> exercises) {
+    return 1680; // Fixed 1680 calories for intermediate workouts
+  }
+
+  int _calculateEstimatedDuration(List<WorkoutExercise> exercises) {
+    return 290; // Fixed 290 minutes for intermediate workouts
+  }
+
+  Workout _buildWorkout() {    return Workout(
       id: 'intermediate_single_muscle_${dayIndex + 1}',
-      title: '${dayNames[dayIndex]} - $muscleGroup',
-      description: 'Day ${dayIndex + 1} of 6-day intermediate single muscle split focusing on $muscleGroup',
+      title: '${dayNames[dayIndex]} - ${muscleGroups[dayIndex]}',
+      description: 'Day ${dayIndex + 1} of 6-day intermediate single muscle split focusing on ${muscleGroups[dayIndex]}',
       category: 'Strength',
       difficulty: 'Intermediate',
       imageUrl: 'assets/images/workouts/intermediate_single_muscle.jpg',
       exercises: _getExercises(),
       addedAt: DateTime.now(),
-      customDuration: 45, // 45 minutes for intermediate workouts
+      customDuration: 180, // Fixed 180 minutes for intermediate workouts
+      customCalories: 1680, // Fixed 1680 calories for intermediate workouts
     );
   }
 

@@ -76,7 +76,8 @@ class WorkoutTemplates {
     category: 'Strength',
     difficulty: 'Beginner',
     imageUrl: 'assets/images/workouts/beginner_single_muscle.jpg',
-    customDuration: ExerciseService.getWorkoutDuration('Beginner'),
+    customDuration: 120, // 120 minutes
+    customCalories: 900, // 900 calories
     exercises: ExerciseService.getExercisesForMuscle('Chest', 'Beginner'),
     addedAt: DateTime.now(),
   );
@@ -88,7 +89,8 @@ class WorkoutTemplates {
     category: 'Strength',
     difficulty: 'Intermediate',
     imageUrl: 'assets/images/workouts/intermediate_single_muscle.jpg',
-    customDuration: ExerciseService.getWorkoutDuration('Intermediate'),
+    customDuration: 180, // 180 minutes
+    customCalories: 1680, // 1680 calories
     exercises: ExerciseService.getExercisesForMuscle('Chest', 'Intermediate'),
     addedAt: DateTime.now(),
   );
@@ -100,7 +102,8 @@ class WorkoutTemplates {
     category: 'Strength',
     difficulty: 'Advanced',
     imageUrl: 'assets/images/workouts/advanced_single_muscle.jpg',
-    customDuration: ExerciseService.getWorkoutDuration('Advanced'),
+    customDuration: 360, // 360 minutes
+    customCalories: 3240, // 3240 calories
     exercises: ExerciseService.getExercisesForMuscle('Chest', 'Advanced'),
     addedAt: DateTime.now(),
   );
@@ -110,11 +113,12 @@ class WorkoutTemplates {
   static final Workout beginnerPPLWorkout = Workout(
     id: '8',
     title: 'Beginner PPL Split',
-    description: 'A 3-day Push Pull Legs split perfect for beginners (2+2 / 2+2 / 2+Shoulders)',
+    description: 'A 3-day Push Pull Legs split perfect for beginners',
     category: 'Strength',
     difficulty: 'Beginner',
     imageUrl: 'assets/images/workouts/beginner_ppl.jpg',
-    customDuration: ExerciseService.getWorkoutDuration('Beginner'),
+    customDuration: 160, // 160 minutes
+    customCalories: 950, // 950 calories
     exercises: ExerciseService.getPPLExercises('Push', 'Beginner'),
     addedAt: DateTime.now(),
   );
@@ -126,7 +130,8 @@ class WorkoutTemplates {
     category: 'Strength',
     difficulty: 'Intermediate',
     imageUrl: 'assets/images/workouts/intermediate_ppl.jpg',
-    customDuration: ExerciseService.getWorkoutDuration('Intermediate'),
+    customDuration: 300, // 300 minutes
+    customCalories: 1650, // 1650 calories
     exercises: ExerciseService.getPPLExercises('Push', 'Intermediate'),
     addedAt: DateTime.now(),
   );
@@ -138,7 +143,8 @@ class WorkoutTemplates {
     category: 'Strength',
     difficulty: 'Advanced',
     imageUrl: 'assets/images/workouts/advanced_ppl.jpg',
-    customDuration: ExerciseService.getWorkoutDuration('Advanced'),
+    customDuration: 450, // 450 minutes
+    customCalories: 2430, // 2430 calories
     exercises: ExerciseService.getPPLExercises('Push', 'Advanced'),
     addedAt: DateTime.now(),
   );

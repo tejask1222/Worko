@@ -177,9 +177,9 @@ class WorkoutCard extends StatelessWidget {
     return workout.exercises.fold(0, (sum, exercise) => sum + exercise.config.sets);
   }
 
-  // Calculate total calories
+  // Get calories, either custom value or calculated from exercises
   int get totalCalories {
-    return workout.exercises.fold(0, (sum, exercise) => sum + exercise.config.calories);
+    return workout.calories;  // This will use the Workout class's calories getter which handles customCalories
   }
 
   Future<File> _getImageFile(String assetPath) async {
@@ -405,7 +405,7 @@ class WorkoutCard extends StatelessWidget {
                       Icon(Icons.timer_outlined, size: 16, color: Colors.blue[600]),
                       const SizedBox(width: 4),
                       Text(
-                        isSingleMuscleWorkout
+                        (isSingleMuscleWorkout || isPPLWorkout)
                           ? '${workout.duration} min'
                           : '$estimatedDuration min',
                         style: TextStyle(color: Colors.grey[600]),
@@ -422,7 +422,7 @@ class WorkoutCard extends StatelessWidget {
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
+                          horizontal: 12,
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(

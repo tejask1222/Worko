@@ -1,3 +1,5 @@
+import 'package:workout/services/exercise_service.dart';
+
 class Exercise {
   final String id;
   final String name;
@@ -98,6 +100,7 @@ class Workout {
   final List<WorkoutExercise> exercises;
   final DateTime addedAt;
   final int? customDuration;
+  final int? customCalories;
 
   const Workout({
     required this.id,
@@ -109,10 +112,16 @@ class Workout {
     required this.exercises,
     required this.addedAt,
     this.customDuration,
+    this.customCalories,
   });
 
-  // Calculate total calories for the workout
-  int get calories => exercises.fold(0, (sum, exercise) => sum + exercise.calories);
+  // Get calories, prioritize custom calories if set
+  int get calories {
+    if (customCalories != null) {
+      return customCalories!;
+    }
+    return exercises.fold(0, (sum, exercise) => sum + exercise.calories);
+  }
 
   // Use custom duration if provided, otherwise calculate based on sets
   int get duration => customDuration ?? exercises.fold(0, (sum, exercise) => sum + exercise.sets);
@@ -127,6 +136,7 @@ class Workout {
     'exercises': exercises.map((e) => e.toJson()).toList(),
     'addedAt': addedAt.toIso8601String(),
     if (customDuration != null) 'customDuration': customDuration,
+    if (customCalories != null) 'customCalories': customCalories,
   };
 
   factory Workout.fromJson(Map<String, dynamic> json) {
@@ -142,6 +152,7 @@ class Workout {
           .toList(),
       addedAt: DateTime.parse(json['addedAt'] as String),
       customDuration: json['customDuration'] as int?,
+      customCalories: json['customCalories'] as int?,
     );
   }
 }

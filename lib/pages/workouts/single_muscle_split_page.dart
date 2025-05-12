@@ -147,10 +147,9 @@ class SingleMuscleSplitPage extends StatelessWidget {
               'lateralRaises',
               'front_raise',
               'rear_delt_fly',
-            ];
-      case 'Legs':
+            ];      case 'Legs':
         return difficulty.toLowerCase() == 'beginner'
-            ? ['squats', 'leg_press', 'leg_curl', 'leg_extension']
+            ? ['squats', 'leg_press', 'leg_curl']
             : difficulty.toLowerCase() == 'intermediate'
             ? ['squats', 'leg_press', 'leg_curl', 'leg_extension']
             : [
@@ -200,13 +199,12 @@ class SingleMuscleSplitPage extends StatelessWidget {
         );
     }
   }
-
   Workout _buildWorkout() {
     final dailyDuration =
         difficulty.toLowerCase() == 'beginner'
-            ? 30
+            ? 20
             : difficulty.toLowerCase() == 'intermediate'
-            ? 45
+            ? 30
             : 60;
 
     return Workout(
@@ -227,13 +225,16 @@ class SingleMuscleSplitPage extends StatelessWidget {
   int _calculateTotalCalories(List<WorkoutExercise> exercises) {
     return exercises.fold(0, (sum, exercise) => sum + exercise.config.calories);
   }
-
   int _calculateEstimatedDuration(List<WorkoutExercise> exercises) {
-    final totalSets = exercises.fold(
-      0,
-      (sum, exercise) => sum + exercise.config.sets,
-    );
-    return (totalSets * 1.5).round(); // 1.5 minutes per set including rest
+    switch (difficulty.toLowerCase()) {
+      case 'beginner':
+        return 20;
+      case 'intermediate':
+        return 30;
+      case 'advanced':
+      default:
+        return 60;
+    }
   }
 
   @override

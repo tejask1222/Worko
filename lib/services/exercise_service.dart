@@ -6,114 +6,202 @@ class ExerciseService {
     'Monday': {
       'Beginner': {
         'exercises': [
-          'bench_press', 'incline_dumbbell_press', 'tricep_pushdowns', 'overhead_tricep_extension'
+          'bench_press',
+          'incline_dumbbell_press',
+          'chest_dips',
+          'tricep_pushdowns'
         ]
       },
       'Intermediate': {
         'exercises': [
-          'flat_barbell_bench', 'incline_dumbbell_press', 'cable_chest_fly',
-          'skull_crushers', 'tricep_pushdowns', 'overhead_tricep_extension'
+          'bench_press',
+          'incline_dumbbell_press',
+          'chest_dips',
+          'cable_chest_fly',
+          'tricep_pushdowns',
+          'overhead_tricep_extension'
         ]
       },
       'Advanced': {
         'exercises': [
-          'flat_barbell_bench', 'incline_dumbbell_press', 'cable_chest_fly', 'chest_dips',
-          'skull_crushers', 'tricep_pushdowns', 'close_grip_bench_press', 'overhead_tricep_extension'
+          'bench_press',
+          'incline_dumbbell_press',
+          'cable_chest_fly',
+          'chest_dips',
+          'skull_crushers',
+          'tricep_pushdowns',
+          'close_grip_bench_press',
+          'overhead_tricep_extension'
         ]
       }
     },
     'Tuesday': {
       'Beginner': {
         'exercises': [
-          'lat_pulldown', 'seated_cable_row', 'barbell_curl', 'hammer_curl'
+          'pull_ups',
+          'latPulldown',
+          'seated_cable_row',
+          'barbell_curl'
         ]
       },
       'Intermediate': {
         'exercises': [
-          'deadlift', 'pullups', 'seated_cable_row',
-          'barbell_curl', 'preacher_curl', 'hammer_curl'
+          'pull_ups',
+          'barbell_row',
+          'seated_cable_row',
+          'barbell_curl',
+          'hammer_curl',
+          'zottman_curl'
         ]
       },
       'Advanced': {
         'exercises': [
-          'deadlift', 'bent_over_row', 'pullups', 'seated_cable_row',
-          'barbell_curl', 'incline_dumbbell_curl', 'preacher_curl', 'cable_curl'
+          'pull_ups',
+          'deadlifts',
+          'barbell_row',
+          'seated_cable_row',
+          'barbell_curl',
+          'incline_dumbbell_curl',
+          'preacher_curl',
+          'cable_curl'
         ]
       }
     },
     'Wednesday': {
       'Beginner': {
         'exercises': [
-          'squats', 'leg_curl', 'dumbbell_shoulder_press', 'lateral_raises', 'rear_delt_fly'
+          'squats',
+          'leg_press',
+          'leg_curl',
+          'standing_calf_raise',
+          'dumbbell_shoulder_press'
         ]
       },
       'Intermediate': {
         'exercises': [
-          'back_squat', 'romanian_deadlift', 'standing_calf_raise',
-          'dumbbell_shoulder_press', 'arnold_press', 'lateral_raises', 'upright_row'
+          'squats',
+          'romanian_deadlift',
+          'leg_press',
+          'leg_curl',
+          'standing_calf_raise',
+          'dumbbell_shoulder_press',
+          'lateralRaises',
+          'rear_delt_fly'
         ]
       },
       'Advanced': {
         'exercises': [
-          'back_squat', 'romanian_deadlift', 'leg_press', 'standing_calf_raise',
-          'dumbbell_shoulder_press', 'arnold_press', 'lateral_raises', 'upright_row', 'front_raise'
+          'squats',
+          'front_squat',
+          'romanian_deadlift',
+          'leg_press',
+          'leg_curl',
+          'standing_calf_raise',
+          'dumbbell_shoulder_press',
+          'arnold_press',
+          'lateralRaises',
+          'upright_row'
         ]
       }
     },
     'Thursday': {
       'Beginner': {
         'exercises': [
-          'dumbbell_chest_press', 'machine_chest_fly', 'close_grip_bench_press', 'tricep_dips'
+          'dumbbell_bench_press',
+          'cable_chest_fly',
+          'chest_dips', // Using chest_dips instead of tricep_dips for consistent naming
+          'tricep_pushdowns'
         ]
       },
       'Intermediate': {
         'exercises': [
-          'incline_machine_press', 'dumbbell_pullover', 'cable_crossovers',
-          'close_grip_bench_press', 'tricep_kickbacks', 'tricep_dips'
+          'dumbbell_bench_press',
+          'incline_bench_press',
+          'cable_chest_fly',
+          'chest_dips',
+          'skull_crushers',
+          'tricep_pushdowns'
         ]
       },
       'Advanced': {
         'exercises': [
-          'incline_barbell_press', 'dumbbell_chest_press', 'pec_deck',
-          'tricep_dips', 'skull_crushers', 'tricep_kickbacks', 'overhead_cable_extension'
+          'dumbbell_bench_press',
+          'incline_bench_press',
+          'decline_bench_press',
+          'cable_chest_fly',
+          'chest_dips',
+          'close_grip_bench_press',
+          'skull_crushers',
+          'tricep_pushdowns'
         ]
       }
     },
     'Friday': {
       'Beginner': {
         'exercises': [
-          'tbar_row', 'dumbbell_row', 'barbell_curl', 'concentration_curl'
+          'barbell_row',
+          'lat_pulldown',
+          'barbell_curl', // Changed from zottman_curl since it's not in beginner exercises
+          'hammer_curl'
         ]
       },
       'Intermediate': {
         'exercises': [
-          'tbar_row', 'lat_pulldown', 'dumbbell_row',
-          'cable_curl', 'zottman_curl', 'concentration_curl'
+          'deadlifts',
+          'barbell_row',
+          'lat_pulldown',
+          'zottman_curl',
+          'preacher_curl',
+          'cable_curl'
         ]
       },
       'Advanced': {
         'exercises': [
-          'tbar_row', 'dumbbell_row', 'lat_pulldown', 'machine_row',
-          'barbell_curl', 'hammer_curl', 'zottman_curl', 'spider_curl'
+          'deadlifts',
+          'barbell_row',
+          'meadows_row',
+          'lat_pulldown',
+          'zottman_curl',
+          'preacher_curl',
+          'spider_curl',
+          'cable_curl'
         ]
       }
     },
     'Saturday': {
       'Beginner': {
         'exercises': [
-          'leg_press', 'walking_lunges', 'dumbbell_shoulder_press', 'face_pulls', 'upright_row'
+          'squats',
+          'leg_press',
+          'seated_calf_raise',
+          'barbell_overhead_press',
+          'lateralRaises'
         ]
       },
       'Intermediate': {
         'exercises': [
-          'front_squat', 'leg_press', 'seated_calf_raise',
-          'front_raise', 'face_pulls', 'rear_delt_fly', 'reverse_pec_deck'
+          'squats',
+          'hack_squat',
+          'leg_press',
+          'leg_curl',
+          'seated_calf_raise',
+          'barbell_overhead_press',
+          'lateralRaises',
+          'face_pulls'
         ]
       },
       'Advanced': {
         'exercises': [
-          'front_squat', 'leg_curl', 'walking_lunges', 'seated_calf_raise',
-          'rear_delt_fly', 'face_pulls', 'cable_rear_fly'
+          'squats',
+          'hack_squat',
+          'bulgarian_split_squat',
+          'leg_press',
+          'leg_curl',
+          'seated_calf_raise',
+          'barbell_overhead_press',
+          'military_press',
+          'lateralRaises',
+          'face_pulls'
         ]
       }
     }
@@ -146,73 +234,64 @@ class ExerciseService {
       'Advanced': ['barbell_overhead_press', 'dumbbell_shoulder_press', 'arnold_press', 'lateral_raises', 'front_raise', 'rear_delt_fly'],
     },
     'Legs': {
-      'Beginner': ['squats', 'leg_press', 'leg_extension'],
-      'Intermediate': ['squats', 'leg_press', 'leg_curl', 'leg_extension'],
-      'Advanced': ['squats', 'front_squat', 'leg_press', 'romanian_deadlift', 'leg_curl', 'leg_extension'],
+      'Beginner': ['squats', 'leg_press', 'leg_curl'],
+      'Intermediate': ['squats', 'leg_press', 'leg_curl', 'romanian_deadlift'],
+      'Advanced': ['squats', 'front_squat', 'leg_press', 'romanian_deadlift', 'leg_curl'],
     },
   };
 
-  static ExerciseConfig getExerciseConfig(String exerciseId, String difficulty) {
-    // Base sets and reps by difficulty
-    int sets = difficulty == 'Beginner' ? 3 : difficulty == 'Intermediate' ? 4 : 5;
-    int reps = difficulty == 'Beginner' ? 12 : difficulty == 'Intermediate' ? 10 : 8;
+  static int _getSetsForDifficulty(String difficulty) {
+    switch (difficulty.toLowerCase()) {
+      case 'beginner':
+        return 3; // 3 sets for beginners to build foundation
+      case 'intermediate':
+        return 4; // 4 sets for intermediates to increase volume
+      case 'advanced':
+        return 5; // 5 sets for advanced to maximize volume
+      default:
+        return 3;
+    }
+  }
 
-    // Exercise-specific calorie mappings
-    final Map<String, Map<String, int>> caloriesByExercise = {
-      // Chest exercises
-      'barbell benchpresss': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'incline_dumbbell_press': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'decline_bench_press': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'dumbbell_pullover': {'Beginner': 20, 'Intermediate': 30, 'Advanced': 30},
-      'chest_dips': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'cable_chest_fly': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 30},
+  static int _getRepsForDifficulty(String difficulty) {
+    switch (difficulty.toLowerCase()) {
+      case 'beginner':
+        return 12; // Higher reps for form and endurance
+      case 'intermediate':
+        return 10; // Moderate reps balancing hypertrophy and strength
+      case 'advanced':
+        return 8; // Lower reps focusing on strength and progressive overload
+      default:
+        return 12;
+    }
+  }
 
-      // Back exercises
-      'deadlifts': {'Beginner': 50, 'Intermediate': 60, 'Advanced': 70},
-      'pullups': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 45},
-      'latPulldown': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'dumbbell_row': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'tbar_row': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'seated_cable_row': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'straight_arm_pulldown': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+  static int getCalories(String difficulty, String workoutType) {
+    return defaultCalories[difficulty]?[workoutType] ?? 900; // Default to 900 calories
+  }
 
-      // Biceps exercises
-      'barbell_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'preacher_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'hammer_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'concentration_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'incline_dumbbell_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'spider_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'cable_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+  static ExerciseConfig getExerciseConfig(String id, {required String difficulty, String workoutType = 'SingleMuscle'}) {
+    int sets;
+    int reps;
+    int calories = getCalories(difficulty, workoutType);
 
-      // Triceps exercises
-      'close_grip_bench_press': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'skull_crushers': {'Beginner': 20, 'Intermediate': 30, 'Advanced': 30},
-      'overhead_tricep_extension': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'tricep_pushdowns': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'overhead_cable_extension': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'tricep_kickbacks': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-
-      // Shoulder exercises
-      'barbell_overhead_press': {'Beginner': 25, 'Intermediate': 35, 'Advanced': 40},
-      'dumbbell_shoulder_press': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'arnold_press': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'lateral_raises': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 25},
-      'front_raise': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'rear_delt_fly': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 25},
-
-      // Legs exercises
-      'squats': {'Beginner': 50, 'Intermediate': 60, 'Advanced': 65},
-      'front_squat': {'Beginner': 45, 'Intermediate': 55, 'Advanced': 60},
-      'leg_press': {'Beginner': 40, 'Intermediate': 45, 'Advanced': 50},
-      'romanian_deadlift': {'Beginner': 40, 'Intermediate': 50, 'Advanced': 55},
-      'leg_curl': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'leg_extension': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-    };
-
-    // Get calories for the specific exercise and difficulty, or use a default value
-    int calories = caloriesByExercise[exerciseId]?[difficulty] ??
-        (difficulty == 'Beginner' ? 70 : difficulty == 'Intermediate' ? 95 : 115);
+    switch (difficulty.toLowerCase()) {
+      case 'beginner':
+        sets = 3;
+        reps = 12;
+        break;
+      case 'intermediate':
+        sets = 4;
+        reps = 10;
+        break;
+      case 'advanced':
+        sets = 5;
+        reps = 8;
+        break;
+      default:
+        sets = 3;
+        reps = 12;
+    }
 
     return ExerciseConfig(
       sets: sets,
@@ -232,19 +311,56 @@ class ExerciseService {
       throw Exception('Could not find exercise: $muscleGroup / $exerciseId');
     }
   }
+  static int getWorkoutDuration(String difficulty, [String? day]) {
+    // If no day is provided, return default duration
+    if (day == null) {
+      switch (difficulty.toLowerCase()) {
+        case 'beginner':
+          return 120; // Default for non-PPL beginner workouts
+        case 'intermediate':
+          return 290; // Default for non-PPL intermediate workouts
+        case 'advanced':
+          return 440; // Default for non-PPL advanced workouts
+        default:
+          return 180;
+      }
+    }
 
-  static int getWorkoutDuration(String difficulty) {
+    // For PPL workouts, return specific durations based on day and difficulty
     switch (difficulty.toLowerCase()) {
       case 'beginner':
-        return 45; // 45-60 mins
+        // Monday, Tuesday, Thursday, Friday: 25min
+        // Wednesday, Saturday: 30min
+        if (day == 'Wednesday' || day == 'Saturday') {
+          return 30;
+        }
+        return 25;
+        
       case 'intermediate':
-        return 60; // 60-75 mins
-      case 'advanced':
-        return 75; // 75-90 mins
-      default:
+        // Monday, Tuesday, Thursday, Friday: 45min
+        // Wednesday, Saturday: 60min
+        if (day == 'Wednesday' || day == 'Saturday') {
+          return 60;
+        }
         return 45;
+        
+      case 'advanced':
+        // Monday, Tuesday, Thursday, Friday: 70min
+        // Wednesday, Saturday: 90min
+        if (day == 'Wednesday' || day == 'Saturday') {
+          return 90;
+        }
+        return 70;
+        
+      default:
+        return 180;
     }
   }
+  static final Map<String, Map<String, int>> defaultCalories = {
+    'Beginner': {'PPL': 160, 'SingleMuscle': 900},
+    'Intermediate': {'PPL': 1650, 'SingleMuscle': 1680},
+    'Advanced': {'PPL': 2430, 'SingleMuscle': 3240},
+  };
 
   static List<WorkoutExercise> getExercisesForMuscle(String muscleGroup, String difficulty) {
     final List<String> exerciseIdsList = exerciseIds[muscleGroup]?[difficulty] ?? [];
@@ -252,7 +368,7 @@ class ExerciseService {
 
     for (final exerciseId in exerciseIdsList) {
       final Exercise exercise = findExercise(muscleGroup, exerciseId);
-      final ExerciseConfig config = getExerciseConfig(exerciseId, difficulty);
+      final ExerciseConfig config = getExerciseConfig(exerciseId, difficulty: difficulty);
       exercises.add(WorkoutExercise(exercise: exercise, config: config));
     }
 
@@ -302,32 +418,6 @@ class ExerciseService {
     return getExercisesForPPLWorkout(day, difficulty);
   }
 
-  static int _getSetsForDifficulty(String difficulty) {
-    switch (difficulty.toLowerCase()) {
-      case 'beginner':
-        return 3;
-      case 'intermediate':
-        return 4;
-      case 'advanced':
-        return 5;
-      default:
-        return 3;
-    }
-  }
-
-  static int _getRepsForDifficulty(String difficulty) {
-    switch (difficulty.toLowerCase()) {
-      case 'beginner':
-        return 12;
-      case 'intermediate':
-        return 10;
-      case 'advanced':
-        return 8;
-      default:
-        return 12;
-    }
-  }
-
   static bool isPPLWorkoutDay(String day) {
     return pplExerciseIds.containsKey(day);
   }
@@ -350,70 +440,59 @@ class ExerciseService {
 
   static int _getCaloriesForExercise(String id, String difficulty) {
     final Map<String, Map<String, int>> caloriesByExercise = {
-      // Chest exercises
-      'barbell benchpresss': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'incline_dumbbell_press': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
+      // Push exercises
+      'bench_press': {'Beginner': 35, 'Intermediate': 40, 'Advanced': 45},
+      'dumbbell_bench_press': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
+      'incline_bench_press': {'Beginner': 35, 'Intermediate': 40, 'Advanced': 45},
+      'decline_bench_press': {'Beginner': 35, 'Intermediate': 40, 'Advanced': 45},
       'cable_chest_fly': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'chest_dips': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'dumbbell_chest_press': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'machine_chest_fly': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'pec_deck': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'decline_bench_press': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      
-      // Back exercises
-      'lat_pulldown': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'seated_cable_row': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'deadlift': {'Beginner': 50, 'Intermediate': 60, 'Advanced': 70},
-      'bent_over_row': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'tbar_row': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'pullups': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'dumbbell_row': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'machine_row': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'straight_arm_pulldown': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      
-      // Arms exercises
-      'barbell_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'preacher_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'hammer_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'concentration_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'incline_dumbbell_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'spider_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'cable_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'zottman_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'close_grip_bench_press': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'skull_crushers': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
+      'tricep_dips': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
+      'skull_crushers': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
       'tricep_pushdowns': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'overhead_cable_extension': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
       'overhead_tricep_extension': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'tricep_kickbacks': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      
-      // Shoulder exercises
-      'barbell_overhead_press': {'Beginner': 25, 'Intermediate': 35, 'Advanced': 40},
-      'dumbbell_shoulder_press': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'arnold_press': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'lateral_raises': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 25},
-      'front_raise': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'rear_delt_fly': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 25},
-      'face_pulls': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'upright_row': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'reverse_pec_deck': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'cable_rear_fly': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      
+      'close_grip_bench_press': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
+
+      // Pull exercises
+      'pullups': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
+      'latPulldown': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
+      'barbell_row': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
+      'meadows_row': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
+      'seated_cable_row': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
+      'deadlifts': {'Beginner': 45, 'Intermediate': 50, 'Advanced': 55},
+      'barbell_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+      'hammer_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+      'incline_dumbbell_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+      'preacher_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+      'spider_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+      'zottman_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+      'cable_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+
       // Legs exercises
       'squats': {'Beginner': 50, 'Intermediate': 60, 'Advanced': 65},
       'front_squat': {'Beginner': 45, 'Intermediate': 55, 'Advanced': 60},
+      'hack_squat': {'Beginner': 45, 'Intermediate': 55, 'Advanced': 60},
+      'bulgarian_split_squat': {'Beginner': 35, 'Intermediate': 45, 'Advanced': 50},
       'leg_press': {'Beginner': 40, 'Intermediate': 45, 'Advanced': 50},
-      'romanian_deadlift': {'Beginner': 40, 'Intermediate': 50, 'Advanced': 55},
       'leg_curl': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'leg_extension': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
+      'romanian_deadlift': {'Beginner': 40, 'Intermediate': 50, 'Advanced': 55},
       'standing_calf_raise': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
       'seated_calf_raise': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'walking_lunges': {'Beginner': 35, 'Intermediate': 40, 'Advanced': 45},
+
+      // Shoulder exercises
+      'dumbbell_shoulder_press': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
+      'barbell_overhead_press': {'Beginner': 35, 'Intermediate': 40, 'Advanced': 45},
+      'military_press': {'Beginner': 35, 'Intermediate': 40, 'Advanced': 45},
+      'arnold_press': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
+      'lateralRaises': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+      'front_raise': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+      'upright_row': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
+      'face_pulls': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
+      'rear_delt_fly': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
     };
 
     // Get calories for the specific exercise and difficulty, or use a default value
-    return caloriesByExercise[id]?[difficulty] ?? 
-      (difficulty == 'Beginner' ? 70 : difficulty == 'Intermediate' ? 95 : 115);
+    return caloriesByExercise[id]?[difficulty] ??
+        (difficulty == 'Beginner' ? 70 : difficulty == 'Intermediate' ? 95 : 115);
   }
 
   static String getPPLDayDescription(String day) {

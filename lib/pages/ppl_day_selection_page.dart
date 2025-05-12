@@ -81,7 +81,7 @@ class PPLDaySelectionPage extends StatelessWidget {
                           difficulty: difficulty,
                           imageUrl: 'assets/images/workouts/ppl_${day.toLowerCase()}.jpg',
                           exercises: exercises,
-                          customDuration: ExerciseService.getWorkoutDuration(difficulty),
+                          customDuration: ExerciseService.getWorkoutDuration(difficulty, day),
                           addedAt: DateTime.now(),
                         );
                         Navigator.push(

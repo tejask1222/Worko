@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../models/workout.dart';
 import '../../services/exercise_library_service.dart';
+import '../../services/exercise_service.dart';
 import '../../active_workout_page.dart';
 import '../../services/workout_instructions_service.dart';
 
 class BeginnerPPLPage extends StatelessWidget {
-  static const List<String> dayNames = ['Monday', 'Tuesday', 'Wednesday'];
-  static const List<String> splitTypes = ['Push', 'Pull', 'Legs'];
+  static const List<String> dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  static const List<String> splitTypes = ['Push', 'Pull', 'Legs', 'Push', 'Pull', 'Legs'];
   
   final int dayIndex;
 
@@ -26,34 +27,33 @@ class BeginnerPPLPage extends StatelessWidget {
 
   List<Exercise> _getSplitExercises(String splitType) {
     final exercises = ExerciseLibraryService.getExercisesByMuscleGroup(splitType);
-    final exerciseIds = _getExerciseIdsForSplit(splitType);
+    final exerciseIds = _getExerciseIdsForType(splitType);
     
     return exerciseIds.map((id) => _getExercise(exercises, id)).toList();
   }
 
-  List<String> _getExerciseIdsForSplit(String splitType) {
+  List<String> _getExerciseIdsForType(String splitType) {
     switch (splitType) {
       case 'Push':
         return [
           'barbell_benchpress',
           'incline_dumbbell_press',
           'tricep_pushdowns',
-          'overhead_tricep_extension'
+          'overhead_tricep_extension',
         ];
       case 'Pull':
         return [
           'latPulldown',
           'seated_cable_row',
           'barbell_curl',
-          'hammer_curl'
+          'hammer_curl',
         ];
       case 'Legs':
         return [
           'squats',
-          'leg_curl',
+          'leg_press',
           'dumbbell_shoulder_press',
           'lateralRaises',
-          'rear_delt_fly'
         ];
       default:
         return [];
@@ -71,27 +71,8 @@ class BeginnerPPLPage extends StatelessWidget {
     return ExerciseConfig(
       sets: 3,
       reps: 12,
-      calories: _getCaloriesForExercise(exercise.id),
+      calories: 160 ~/ _getExerciseIdsForType(splitTypes[dayIndex]).length, // Distribute 160 calories evenly
     );
-  }
-
-  int _getCaloriesForExercise(String exerciseId) {
-    final caloriesMap = {
-      'squats': 50,
-      'barbell_benchpress': 40,
-      'incline_dumbbell_press': 35,
-      'tricep_pushdowns': 30,
-      'overhead_tricep_extension': 30,
-      'latPulldown': 40,
-      'seated_cable_row': 35,
-      'barbell_curl': 30,
-      'hammer_curl': 30,
-      'leg_curl': 35,
-      'dumbbell_shoulder_press': 30,
-      'lateralRaises': 25,
-      'rear_delt_fly': 25,
-    };
-    return caloriesMap[exerciseId] ?? 30;
   }
 
   String _getSplitDescription(String splitType) {
@@ -112,22 +93,22 @@ class BeginnerPPLPage extends StatelessWidget {
     return Workout(
       id: 'beginner_ppl_${dayIndex + 1}',
       title: '${dayNames[dayIndex]} - $splitType',
-      description: 'Beginner ${splitType} workout - ${_getSplitDescription(splitType)}',
+      description: _getSplitDescription(splitType),
       category: 'Strength',
       difficulty: 'Beginner',
       imageUrl: 'assets/images/workouts/beginner_ppl.jpg',
       exercises: _getExercises(),
       addedAt: DateTime.now(),
-      customDuration: 45,
+      customDuration: 180, // 180 minutes for beginner PPL workouts
     );
   }
 
   int _calculateTotalCalories(List<WorkoutExercise> exercises) {
-    return exercises.fold(0, (sum, exercise) => sum + exercise.config.calories);
+    return 160; // Fixed 160 calories for beginner PPL workouts
   }
 
   int _calculateEstimatedDuration(List<WorkoutExercise> exercises) {
-    return 45; // Fixed 45 minutes for beginner workouts
+    return 180; // Fixed 180 minutes for beginner PPL workouts
   }
 
   @override

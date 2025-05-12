@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:provider/provider.dart';
 import 'models/workout.dart';
+import 'providers/achievement.dart';
 
 class ActiveWorkoutPage extends StatefulWidget {
   final Workout workout;
@@ -188,24 +190,46 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
       final weekKey = '${weekStart.year}-${weekStart.month}-${weekStart.day}';
       final weeklyStatsRef = FirebaseDatabase.instance.ref('weeklyStats/${user.uid}/$weekKey');
 
+      // Update weekly stats and check for achievements
       final weeklySnapshot = await weeklyStatsRef.get();
       if (weeklySnapshot.exists) {
         final data = Map<String, dynamic>.from(weeklySnapshot.value as Map);
+        
+        // Get current active days
+        Set<int> activeWorkoutDays;
+        if (data.containsKey('activeWorkoutDays')) {
+          if (data['activeWorkoutDays'] is List) {
+            activeWorkoutDays = Set<int>.from(List<int>.from(data['activeWorkoutDays']));
+          } else {
+            activeWorkoutDays = Set<int>.from(data['activeWorkoutDays'] as Set);
+          }
+        } else {
+          activeWorkoutDays = {};
+        }
+        
+        // Add today's workout
+        activeWorkoutDays.add(now.weekday - 1);  // 0-based index for weekday
+        
         await weeklyStatsRef.update({
-          'totalCalories': (data['totalCalories'] as int) + _caloriesBurned,
-          'totalWorkouts': (data['totalWorkouts'] as int) + 1,
-          'totalDuration': (data['totalDuration'] as int) + _elapsed.inMinutes,
+          'totalCalories': (data['totalCalories'] as int? ?? 0) + _caloriesBurned,
+          'totalWorkouts': (data['totalWorkouts'] as int? ?? 0) + 1,
+          'totalDuration': (data['totalDuration'] as int? ?? 0) + _elapsed.inMinutes,
+          'activeWorkoutDays': activeWorkoutDays.toList(),
         });
       } else {
         await weeklyStatsRef.set({
           'totalCalories': _caloriesBurned,
           'totalWorkouts': 1,
           'totalDuration': _elapsed.inMinutes,
+          'activeWorkoutDays': [now.weekday - 1],
           'weekStart': weekStart.toIso8601String(),
         });
       }
 
       if (!mounted) return;
+
+      // Check achievements
+      await Provider.of<AchievementProvider>(context, listen: false).checkAchievements();
 
       // Show completion message
       ScaffoldMessenger.of(context).showSnackBar(

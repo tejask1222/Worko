@@ -15,9 +15,9 @@ class WorkoutDetailPage extends StatelessWidget {
     required this.workout,
   }) : super(key: key);
 
-  // Calculate total duration (estimating 1 minute per set)
+  // Return customDuration if available, otherwise estimate based on sets
   int get estimatedDuration {
-    return workout.exercises.fold(0, (sum, exercise) => sum + exercise.config.sets);
+    return workout.customDuration ?? workout.exercises.fold(0, (sum, exercise) => sum + exercise.config.sets);
   }
 
   // Calculate total calories
