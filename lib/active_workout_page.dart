@@ -385,11 +385,10 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                               ),
                             ),
                             const Spacer(),
-                            if (isSetCompleted(index))
-                              const Icon(
-                                Icons.check_circle,
-                                color: Colors.green,
-                              ),
+                            Icon(
+                              Icons.check_circle,
+                              color: isSetCompleted(index) ? Colors.green : Colors.grey[300],
+                            ),
                           ],
                         ),
                       ),

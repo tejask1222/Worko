@@ -4,6 +4,8 @@ import 'models/workout.dart';
 import 'active_workout_page.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class WorkoutDetailPage extends StatelessWidget {
   final Workout workout;
@@ -35,6 +37,91 @@ class WorkoutDetailPage extends StatelessWidget {
       );
     }
     return file;
+  }
+
+  // Get user preference for showing workout instructions
+  Future<bool> _shouldShowInstructions() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return true;
+    
+    final prefSnapshot = await FirebaseDatabase.instance
+        .ref('userPreferences/${user.uid}/showWorkoutInstructions')
+        .get();
+    
+    // If preference doesn't exist or is true, show instructions
+    return !prefSnapshot.exists || prefSnapshot.value == true;
+  }
+
+  // Save user preference for showing workout instructions
+  Future<void> _saveInstructionsPreference(bool show) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    
+    await FirebaseDatabase.instance
+        .ref('userPreferences/${user.uid}')
+        .update({'showWorkoutInstructions': show});
+  }
+
+  // Show instructions dialog
+  Future<void> _showInstructionsDialog(BuildContext context) async {
+    bool showAgain = true;
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Workout Instructions'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Click each set one by one and then after completing the exercise click "Complete Exercise" to move to next exercise.\n\nNote: You can click all sets at once after completing the exercise and then click "Complete Exercise".',
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: !showAgain,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            showAgain = !(value ?? false);
+                          });
+                        },
+                      ),
+                      Expanded(
+                        child: const Text(
+                          'Don\'t show this message again',
+                          softWrap: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                await _saveInstructionsPreference(showAgain);
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ActiveWorkoutPage(workout: workout),
+                    ),
+                  );
+                }
+              },
+              child: const Text('Got it'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildExerciseCard(WorkoutExercise workoutExercise) {
@@ -235,13 +322,19 @@ class WorkoutDetailPage extends StatelessWidget {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ActiveWorkoutPage(workout: workout),
-              ),
-            );
+          onPressed: () async {
+            if (await _shouldShowInstructions()) {
+              await _showInstructionsDialog(context);
+            } else {
+              if (context.mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ActiveWorkoutPage(workout: workout),
+                  ),
+                );
+              }
+            }
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue,

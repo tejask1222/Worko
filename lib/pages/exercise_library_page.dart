@@ -51,17 +51,8 @@ class _ExerciseLibraryPageState extends State<ExerciseLibraryPage> {
   Widget build(BuildContext context) {
     final muscleGroups = ['All', ...ExerciseLibraryService.getMuscleGroups()];
 
-    return Scaffold(
-      appBar: AppBar(
+    return Scaffold(      appBar: AppBar(
         title: const Text('Exercise Library'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              // TODO: Implement adding new exercises
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [

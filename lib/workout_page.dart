@@ -7,7 +7,13 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'pages/create_workout_page.dart';
+import 'pages/single_muscle_selection_page.dart';
+import 'pages/workouts/full_body_workout_page.dart';
+import 'pages/workouts/upper_body_workout_page.dart';
+import 'pages/workouts/lower_body_workout_page.dart';
+import 'pages/workouts/core_workout_page.dart';
+import 'pages/workouts/single_muscle_split_page.dart';
+import 'pages/ppl_day_selection_page.dart';
 
 class WorkoutPage extends StatefulWidget {
   static const String routeName = '/workout';
@@ -73,7 +79,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const Text(
                         'Workouts',
@@ -82,27 +88,13 @@ class _WorkoutPageState extends State<WorkoutPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const CreateWorkoutPage()),
-                          );
-                        },
-                        icon: const Icon(Icons.add),
-                        label: const Text('Create'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4285F4),
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Search workouts...',
+                      hintText: 'Search...',
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -149,7 +141,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
               child: filteredWorkouts.isEmpty
                 ? Center(
                     child: Text(
-                      'No workouts found',
+                      'No match found',
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 16,
@@ -249,134 +241,225 @@ class WorkoutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      elevation: 0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: FutureBuilder<File>(
-                    future: _getImageFile(workout.imageUrl),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      if (snapshot.hasError || !snapshot.hasData) {
-                        return Image.asset(
-                          workout.imageUrl,
+    bool isSingleMuscleWorkout = workout.id.startsWith('5') || workout.id.startsWith('6') || workout.id.startsWith('7');
+    bool isPPLWorkout = workout.id.startsWith('8') || workout.id.startsWith('9') || workout.id.startsWith('10');
+    
+    return GestureDetector(
+      onTap: () {
+        switch (workout.id) {
+          case '1': // Full Body Workout
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FullBodyWorkoutPage(
+                  difficulty: workout.difficulty,
+                ),
+              ),
+            );
+            break;
+          case '2': // Upper Body Workout
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UpperBodyWorkoutPage(
+                  difficulty: workout.difficulty,
+                ),
+              ),
+            );
+            break;
+          case '3': // Lower Body Workout
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LowerBodyWorkoutPage(
+                  difficulty: workout.difficulty,
+                ),
+              ),
+            );
+            break;
+          case '4': // Core Workout
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CoreWorkoutPage(
+                  difficulty: workout.difficulty,
+                ),
+              ),
+            );
+            break;
+          case '5': // Beginner Single Muscle
+          case '6': // Intermediate Single Muscle
+          case '7': // Advanced Single Muscle
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SingleMuscleSelectionPage(
+                  difficulty: workout.difficulty,
+                ),
+              ),
+            );
+            break;
+          case '8': // Beginner PPL
+          case '9': // Intermediate PPL
+          case '10': // Advanced PPL
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PPLDaySelectionPage(
+                  difficulty: workout.difficulty,
+                ),
+              ),
+            );
+            break;
+          default:
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WorkoutDetailPage(workout: workout),
+              ),
+            );
+        }
+      },
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 0,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: FutureBuilder<File>(
+                      future: _getImageFile(workout.imageUrl),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (snapshot.hasError || !snapshot.hasData) {
+                          return Image.asset(
+                            workout.imageUrl,
+                            fit: BoxFit.cover,
+                          );
+                        }
+                        return Image.file(
+                          snapshot.data!,
                           fit: BoxFit.cover,
                         );
-                      }
-                      return Image.file(
-                        snapshot.data!,
-                        fit: BoxFit.cover,
-                      );
-                    },
+                      },
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Material(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  child: InkWell(
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Material(
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    onTap: () => _addToHomepage(context),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.home_outlined,
-                        size: 20,
-                        color: Colors.blue[600],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  workout.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '${workout.exercises.length} exercises',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Icon(Icons.timer_outlined, size: 16, color: Colors.blue[600]),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$estimatedDuration min',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                    const SizedBox(width: 16),
-                    Icon(Icons.local_fire_department_outlined, 
-                         size: 16, 
-                         color: Colors.orange[600]),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$totalCalories cal',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        workout.difficulty,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[700],
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () => _addToHomepage(context),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.home_outlined,
+                          size: 20,
+                          color: Colors.blue[600],
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 16),
-                SizedBox(
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    workout.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${workout.exercises.length} exercises',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Icon(Icons.timer_outlined, size: 16, color: Colors.blue[600]),
+                      const SizedBox(width: 4),
+                      Text(
+                        isSingleMuscleWorkout
+                          ? '${workout.duration} min'
+                          : '$estimatedDuration min',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      const SizedBox(width: 16),
+                      Icon(Icons.local_fire_department_outlined, 
+                           size: 16, 
+                           color: Colors.orange[600]),
+                      const SizedBox(width: 4),
+                      Text(
+                        '$totalCalories cal',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          workout.difficulty,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),                SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WorkoutDetailPage(workout: workout),
-                        ),
-                      );
+                      if (isSingleMuscleWorkout || isPPLWorkout) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => isPPLWorkout
+                                ? PPLDaySelectionPage(difficulty: workout.difficulty)
+                                : SingleMuscleSelectionPage(difficulty: workout.difficulty),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WorkoutDetailPage(workout: workout),
+                          ),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4285F4),
@@ -386,13 +469,14 @@ class WorkoutCard extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    child: const Text('Start Workout'),
+                    child: Text((isSingleMuscleWorkout || isPPLWorkout) ? 'Choose Day' : 'Start Workout'),
                   ),
                 ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

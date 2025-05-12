@@ -1,10 +1,12 @@
 class Exercise {
+  final String id;
   final String name;
   final String description;
   final String targetMuscles;
   final String imageUrl;
 
   const Exercise({
+    required this.id,
     required this.name,
     required this.description,
     required this.targetMuscles,
@@ -12,6 +14,7 @@ class Exercise {
   });
 
   Map<String, dynamic> toJson() => {
+    'id': id,
     'name': name,
     'description': description,
     'targetMuscles': targetMuscles,
@@ -20,6 +23,7 @@ class Exercise {
 
   factory Exercise.fromJson(Map<String, dynamic> json) {
     return Exercise(
+      id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String,
       targetMuscles: json['targetMuscles'] as String,
@@ -93,6 +97,7 @@ class Workout {
   final String difficulty;
   final List<WorkoutExercise> exercises;
   final DateTime addedAt;
+  final int? customDuration;
 
   const Workout({
     required this.id,
@@ -103,13 +108,14 @@ class Workout {
     required this.difficulty,
     required this.exercises,
     required this.addedAt,
+    this.customDuration,
   });
 
   // Calculate total calories for the workout
   int get calories => exercises.fold(0, (sum, exercise) => sum + exercise.calories);
 
-  // Calculate total duration (assuming 1 minute per set as a rough estimate)
-  int get duration => exercises.fold(0, (sum, exercise) => sum + exercise.sets);
+  // Use custom duration if provided, otherwise calculate based on sets
+  int get duration => customDuration ?? exercises.fold(0, (sum, exercise) => sum + exercise.sets);
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -120,6 +126,7 @@ class Workout {
     'difficulty': difficulty,
     'exercises': exercises.map((e) => e.toJson()).toList(),
     'addedAt': addedAt.toIso8601String(),
+    if (customDuration != null) 'customDuration': customDuration,
   };
 
   factory Workout.fromJson(Map<String, dynamic> json) {
@@ -134,6 +141,7 @@ class Workout {
           .map((e) => WorkoutExercise.fromJson(e as Map<String, dynamic>))
           .toList(),
       addedAt: DateTime.parse(json['addedAt'] as String),
+      customDuration: json['customDuration'] as int?,
     );
   }
 }

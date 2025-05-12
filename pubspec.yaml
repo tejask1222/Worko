@@ -87,6 +87,82 @@ flutter:
     - assets/images/workouts/plank.jpg
     - assets/images/workouts/lunges.jpg
     - assets/images/workouts/crunches.jpg
+    - assets/images/workouts/beginner_single_muscle.jpg
+    - assets/images/workouts/intermediate_single_muscle.jpg
+    - assets/images/workouts/advanced_single_muscle.jpg
+    - assets/images/workouts/barbell_benchpress.jpg
+    - assets/images/workouts/incline_dumbbell_press.jpg
+    - assets/images/workouts/cable_chest_fly.jpg
+    - assets/images/workouts/latpulldown.jpg
+    - assets/images/workouts/dumbbell_row.jpg
+    - assets/images/workouts/seated_cable_row.jpg
+    - assets/images/workouts/barbell_curl.jpg
+    - assets/images/workouts/hammer_curl.jpeg
+    - assets/images/workouts/concentration_curl.jpeg
+    - assets/images/workouts/skull_crushers.jpeg
+    - assets/images/workouts/overhead_tricep_extension.jpeg
+    - assets/images/workouts/tricep_pushdowns.jpeg
+    - assets/images/workouts/dumbbell_shoulder_press.jpg
+    - assets/images/workouts/lateralraises.jpg
+    - assets/images/workouts/rear_delt_fly.jpeg
+    - assets/images/workouts/leg_curl.jpeg
+    - assets/images/workouts/leg_extension.jpg
+    - assets/images/workouts/dumbbell_pullover.jpeg
+    - assets/images/workouts/deadlifts.jpg
+    - assets/images/workouts/preacher_curl.jpeg
+    - assets/images/workouts/incline_dumbbell_curl.jpeg
+    - assets/images/workouts/cable_curl.jpeg
+    - assets/images/workouts/close_grip_bench_press.jpeg
+    - assets/images/workouts/arnold_press.jpeg
+    - assets/images/workouts/leg_press.jpg
+    - assets/images/workouts/decline_bench_press.jpeg
+    - assets/images/workouts/dips.jpeg
+    - assets/images/workouts/tbar_row.jpeg
+    - assets/images/workouts/spider_curl.jpeg
+    - assets/images/workouts/overhead_cable_extension.jpg
+    - assets/images/workouts/straight_arm_pulldown.jpeg
+    - assets/images/workouts/tricep_kickbacks.jpg
+    - assets/images/workouts/barbell_overhead_press.jpg
+    - assets/images/workouts/front_raise.jpeg
+    - assets/images/workouts/front_squats.jpg
+    - assets/images/workouts/romanian_deadlifts.jpg
+    - assets/images/workouts/jumpingjacks.jpg
+    - assets/images/workouts/bicepcurls.jpg
+    - assets/images/workouts/russiantwists.jpg
+    - assets/images/workouts/mountainclimbers.jpg
+    - assets/images/workouts/chest_dips.jpg
+    - assets/images/workouts/lat_pulldown.jpg
+    - assets/images/workouts/leg_curls.jpeg
+    - assets/images/workouts/lateral_raises.jpg
+    - assets/images/workouts/dumbbell_chest_press.jpg
+    - assets/images/workouts/machine_chest_fly.jpg
+    - assets/images/workouts/tricep_dips.jpg
+    - assets/images/workouts/ez_bar_curl.jpg
+    - assets/images/workouts/beginner_ppl.jpg
+    - assets/images/workouts/intermediate_ppl.jpg
+    - assets/images/workouts/advanced_ppl.jpg
+    - assets/images/workouts/walking_lunges.jpg
+    - assets/images/workouts/face_pulls.jpg
+    - assets/images/workouts/upright_row.jpg
+    - assets/images/workouts/flat_barbell_bench.jpg
+    - assets/images/workouts/deadlift.jpg
+    - assets/images/workouts/back_squat.jpg
+    - assets/images/workouts/romanian_deadlift.jpg
+    - assets/images/workouts/standing_calf_raise.jpg
+    - assets/images/workouts/incline_machine_press.jpg
+    - assets/images/workouts/cable_crossovers.jpg
+    - assets/images/workouts/zottman_curl.jpg
+    - assets/images/workouts/front_squat.jpg
+    - assets/images/workouts/seated_calf_raise.jpg
+    - assets/images/workouts/reverse_pec_deck.jpg
+    - assets/images/workouts/bent_over_row.jpg
+    - assets/images/workouts/pec_deck.jpg
+    - assets/images/workouts/incline_barbell_press.jpg
+    - assets/images/workouts/machine_row.jpg
+    - assets/images/workouts/cable_rear_fly.jpg
+
+
+    
 
   # An image asset can refer to one or more resolution-specific "variants", sees
   # https://flutter.dev/to/resolution-aware-images

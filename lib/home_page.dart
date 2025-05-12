@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
 
   void _setupAutoRefresh() {
     // Refresh stats every minute
-    _refreshTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+    _refreshTimer = Timer.periodic(const Duration(minutes: 10), (_) {
       if (mounted) {
         _fetchWorkoutStats();
       }
