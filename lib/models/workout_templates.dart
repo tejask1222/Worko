@@ -11,6 +11,60 @@ class WorkoutTemplates {
     );
   }
 
+  static List<WorkoutExercise> getWorkoutExercises(String workoutType, int totalCalories) {
+    List<Exercise> exercises;
+    
+    switch (workoutType) {
+      case 'Full Body':
+        exercises = [
+          _findExercise('Chest', 'pushups'),
+          _findExercise('Back', 'pull_ups'),
+          _findExercise('Legs', 'squats'),
+          _findExercise('Core', 'plank'),
+        ];
+        break;
+      case 'Upper Body':
+        exercises = [
+          _findExercise('Chest', 'barbell benchpresss'),
+          _findExercise('Back', 'latPulldown'),
+          _findExercise('Shoulders', 'barbell_overhead_press'),
+          _findExercise('Arms', 'barbell_curl'),
+        ];
+        break;
+      case 'Lower Body':
+        exercises = [
+          _findExercise('Legs', 'squats'),
+          _findExercise('Legs', 'front_squat'),
+          _findExercise('Legs', 'leg_press'),
+          _findExercise('Legs', 'romanian_deadlift'),
+          _findExercise('Legs', 'leg_curl'),
+          _findExercise('Legs', 'leg_extension'),
+        ];
+        break;
+      case 'Core':
+        exercises = [
+          _findExercise('Core', 'plank'),
+          _findExercise('Core', 'crunches'),
+          _findExercise('Core', 'russianTwists'),
+          _findExercise('Core', 'mountainClimbers'),
+        ];
+        break;
+      default:
+        return [];
+    }
+
+    final caloriesPerExercise = totalCalories ~/ exercises.length;
+
+    return exercises.map((e) => WorkoutExercise(
+      exercise: e,
+      config: ExerciseConfig(
+        sets: 3,
+        reps: 12,
+        calories: caloriesPerExercise,
+      ),
+    )).toList();
+  }
+
   static final Workout fullBodyWorkout = Workout(
     id: '1',
     title: 'Full Body Workout',
@@ -18,8 +72,10 @@ class WorkoutTemplates {
     category: 'Strength',
     difficulty: 'Beginner',
     imageUrl: 'assets/images/workouts/full_body.jpg',
-    exercises: ExerciseLibraryService.getDefaultWorkoutExercises('Full Body'),
+    exercises: getWorkoutExercises('Full Body', 120),
     addedAt: DateTime.now(),
+    customDuration: 20,  // Updated from 18 to 20 minutes
+    customCalories: 120,
   );
 
   static final Workout upperBodyWorkout = Workout(
@@ -29,8 +85,10 @@ class WorkoutTemplates {
     category: 'Strength',
     difficulty: 'Intermediate',
     imageUrl: 'assets/images/workouts/upper_body.jpg',
-    exercises: ExerciseLibraryService.getDefaultWorkoutExercises('Upper Body'),
+    exercises: getWorkoutExercises('Upper Body', 100),
     addedAt: DateTime.now(),
+    customDuration: 20,  // Updated from 15 to 20 minutes
+    customCalories: 100,
   );
 
   static final Workout lowerBodyWorkout = Workout(
@@ -40,22 +98,10 @@ class WorkoutTemplates {
     category: 'Strength',
     difficulty: 'Beginner',
     imageUrl: 'assets/images/workouts/lower_body.jpg',
-    exercises: [
-      _findExercise('Legs', 'squats'),
-      _findExercise('Legs', 'front_squat'),
-      _findExercise('Legs', 'leg_press'),
-      _findExercise('Legs', 'romanian_deadlift'),
-      _findExercise('Legs', 'leg_curl'),
-      _findExercise('Legs', 'leg_extension'),
-    ].map((e) => WorkoutExercise(
-      exercise: e,
-      config: ExerciseConfig(
-        sets: 3,
-        reps: 12,
-        calories: 50,
-      ),
-    )).toList(),
+    exercises: getWorkoutExercises('Lower Body', 150),
     addedAt: DateTime.now(),
+    customDuration: 20,  // Updated from 18 to 20 minutes
+    customCalories: 150,
   );
 
   static final Workout coreWorkout = Workout(
@@ -65,8 +111,10 @@ class WorkoutTemplates {
     category: 'Core',
     difficulty: 'Intermediate',
     imageUrl: 'assets/images/workouts/core.jpg',
-    exercises: ExerciseLibraryService.getDefaultWorkoutExercises('Core'),
+    exercises: getWorkoutExercises('Core', 80),
     addedAt: DateTime.now(),
+    customDuration: 15,  // Updated from 12 to 15 minutes
+    customCalories: 80,
   );
 
   static final Workout beginnerSingleMuscleWorkout = Workout(

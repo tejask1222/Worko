@@ -16,31 +16,13 @@ class FullBodyWorkoutPage extends StatelessWidget {
     
     // Customize the exercise configuration based on difficulty
     return exercises.map((exercise) {
-      int sets;
-      int reps;
-      int calories;
-
-      switch (difficulty.toLowerCase()) {
-        case 'beginner':
-          sets = 3;
-          reps = 12;
-          calories = exercise.exercise.targetMuscles.contains('Cardio') ? 100 : 50;
-          break;
-        case 'intermediate':
-          sets = 4;
-          reps = 10;
-          calories = exercise.exercise.targetMuscles.contains('Cardio') ? 120 : 70;
-          break;
-        case 'advanced':
-          sets = 5;
-          reps = 8;
-          calories = exercise.exercise.targetMuscles.contains('Cardio') ? 150 : 90;
-          break;
-        default:
-          sets = 3;
-          reps = 12;
-          calories = 50;
-      }
+      int sets = difficulty.toLowerCase() == 'advanced' ? 5 : 
+                 difficulty.toLowerCase() == 'intermediate' ? 4 : 3;
+      int reps = difficulty.toLowerCase() == 'advanced' ? 8 : 
+                 difficulty.toLowerCase() == 'intermediate' ? 10 : 12;
+      
+      // Calculate calories per exercise
+      int calories = 120 ~/ exercises.length; // Total workout calories divided by number of exercises
 
       return WorkoutExercise(
         exercise: exercise.exercise,
@@ -63,9 +45,8 @@ class FullBodyWorkoutPage extends StatelessWidget {
       imageUrl: 'assets/images/workouts/full_body.jpg',
       exercises: _getExercises(),
       addedAt: DateTime.now(),
-      customDuration: difficulty.toLowerCase() == 'beginner' ? 45 
-                     : difficulty.toLowerCase() == 'intermediate' ? 60 
-                     : 75, // Duration in minutes
+      customDuration: 20, // Updated from 18 to 20 minutes
+      customCalories: 120, // Fixed 120 calories
     );
   }
 

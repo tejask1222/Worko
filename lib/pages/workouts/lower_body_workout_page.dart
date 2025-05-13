@@ -13,17 +13,31 @@ class LowerBodyWorkoutPage extends StatelessWidget {
   List<WorkoutExercise> _getExercises() {
     final exercises = [
       _getExercise('Legs', 'squats'),
+      _getExercise('Legs', 'front_squats'),
       _getExercise('Legs', 'leg_press'),
-      _getExercise('Legs', 'leg_extension'),
+      _getExercise('Legs', 'romanian_deadlifts'),
       _getExercise('Legs', 'leg_curl'),
-      if (difficulty != 'Beginner') _getExercise('Legs', 'romanian_deadlifts'),
-      if (difficulty == 'Advanced') _getExercise('Legs', 'front_squats'),
-    ].where((e) => e != null).toList();
+      _getExercise('Legs', 'leg_extension'),
+    ];
 
-    return exercises.map((exercise) => WorkoutExercise(
-      exercise: exercise,
-      config: _getExerciseConfig(exercise),
-    )).toList();
+    const totalCalories = 150; // Fixed total calories
+    final caloriesPerExercise = totalCalories ~/ exercises.length;
+
+    return exercises.map((exercise) {
+      int sets = difficulty.toLowerCase() == 'advanced' ? 5 : 
+                 difficulty.toLowerCase() == 'intermediate' ? 4 : 3;
+      int reps = difficulty.toLowerCase() == 'advanced' ? 8 : 
+                 difficulty.toLowerCase() == 'intermediate' ? 10 : 12;
+
+      return WorkoutExercise(
+        exercise: exercise,
+        config: ExerciseConfig(
+          sets: sets,
+          reps: reps,
+          calories: caloriesPerExercise,
+        ),
+      );
+    }).toList();
   }
 
   Exercise _getExercise(String muscleGroup, String exerciseId) {
@@ -34,54 +48,6 @@ class LowerBodyWorkoutPage extends StatelessWidget {
     );
   }
 
-  ExerciseConfig _getExerciseConfig(Exercise exercise) {
-    int sets;
-    int reps;
-    int calories;
-
-    switch (difficulty.toLowerCase()) {
-      case 'beginner':
-        sets = 3;
-        reps = 12;
-        calories = _getCaloriesForExercise(exercise.id, 'Beginner');
-        break;
-      case 'intermediate':
-        sets = 4;
-        reps = 10;
-        calories = _getCaloriesForExercise(exercise.id, 'Intermediate');
-        break;
-      case 'advanced':
-        sets = 5;
-        reps = 8;
-        calories = _getCaloriesForExercise(exercise.id, 'Advanced');
-        break;
-      default:
-        sets = 3;
-        reps = 12;
-        calories = 50;
-    }
-
-    return ExerciseConfig(
-      sets: sets,
-      reps: reps,
-      calories: calories,
-    );
-  }
-
-  int _getCaloriesForExercise(String exerciseId, String difficulty) {
-    final Map<String, Map<String, int>> caloriesByExercise = {
-      'squats': {'Beginner': 50, 'Intermediate': 60, 'Advanced': 65},
-      'front_squats': {'Beginner': 45, 'Intermediate': 55, 'Advanced': 60},
-      'leg_press': {'Beginner': 40, 'Intermediate': 45, 'Advanced': 50},
-      'romanian_deadlifts': {'Beginner': 40, 'Intermediate': 50, 'Advanced': 55},
-      'leg_curl': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'leg_extension': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-    };
-
-    return caloriesByExercise[exerciseId]?[difficulty] ?? 
-      (difficulty == 'Beginner' ? 70 : difficulty == 'Intermediate' ? 95 : 115);
-  }
-
   Workout _buildWorkout() {
     return Workout(
       id: 'lower_body_${difficulty.toLowerCase()}',
@@ -90,11 +56,10 @@ class LowerBodyWorkoutPage extends StatelessWidget {
       category: 'Strength',
       difficulty: difficulty,
       imageUrl: 'assets/images/workouts/lower_body.jpg',
-      exercises: _getExercises(),
+      exercises: _getExercises(),      
       addedAt: DateTime.now(),
-      customDuration: difficulty.toLowerCase() == 'beginner' ? 45 
-                     : difficulty.toLowerCase() == 'intermediate' ? 60 
-                     : 75, // Duration in minutes
+      customDuration: 20, // Updated from 18 to 20 minutes
+      customCalories: 150, // Fixed 150 calories
     );
   }
 

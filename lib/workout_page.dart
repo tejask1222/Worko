@@ -172,9 +172,9 @@ class WorkoutCard extends StatelessWidget {
     required this.workout,
   }) : super(key: key);
 
-  // Calculate total duration (estimating 1 minute per set)
+  // Get duration from workout's customDuration or calculate from exercises
   int get estimatedDuration {
-    return workout.exercises.fold(0, (sum, exercise) => sum + exercise.config.sets);
+    return workout.duration;  // This will use the Workout class's duration getter which handles customDuration
   }
 
   // Get calories, either custom value or calculated from exercises

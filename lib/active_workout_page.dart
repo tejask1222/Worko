@@ -35,6 +35,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
       (index) => <int>{},
     );
     _exerciseCompleted = {};
+    _caloriesBurned = widget.workout.customCalories ?? widget.workout.calories; // Initialize with workout's total calories
     startTimer();
   }
 
@@ -72,10 +73,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     setState(() {
       if (completedSets[currentExerciseIndex].contains(setIndex)) {
         completedSets[currentExerciseIndex].remove(setIndex);
-        _caloriesBurned -= (currentExercise.config.calories / currentExercise.config.sets).round();
       } else {
         completedSets[currentExerciseIndex].add(setIndex);
-        _caloriesBurned += (currentExercise.config.calories / currentExercise.config.sets).round();
       }
     });
   }

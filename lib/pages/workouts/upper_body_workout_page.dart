@@ -12,27 +12,34 @@ class UpperBodyWorkoutPage extends StatelessWidget {
 
   List<WorkoutExercise> _getExercises() {
     final exercises = [
-      // Chest exercises
       _getExercise('Chest', 'barbell_benchpress'),
       _getExercise('Chest', 'incline_dumbbell_press'),
-      
-      // Back exercises
-      _getExercise('Back', 'latPulldown'),
+      _getExercise('Back', 'latpulldown'),
       _getExercise('Back', 'seated_cable_row'),
-      
-      // Shoulder exercises
       _getExercise('Shoulders', 'barbell_overhead_press'),
       _getExercise('Shoulders', 'lateralRaises'),
-      
-      // Arms exercises
       _getExercise('Arms', 'barbell_curl'),
       _getExercise('Arms', 'tricep_pushdowns'),
     ];
 
-    return exercises.map((exercise) => WorkoutExercise(
-      exercise: exercise,
-      config: _getExerciseConfig(exercise),
-    )).toList();
+    const totalCalories = 100; // Fixed total calories
+    final caloriesPerExercise = totalCalories ~/ exercises.length;
+
+    return exercises.map((exercise) {
+      int sets = difficulty.toLowerCase() == 'advanced' ? 5 : 
+                 difficulty.toLowerCase() == 'intermediate' ? 4 : 3;
+      int reps = difficulty.toLowerCase() == 'advanced' ? 8 : 
+                 difficulty.toLowerCase() == 'intermediate' ? 10 : 12;
+
+      return WorkoutExercise(
+        exercise: exercise,
+        config: ExerciseConfig(
+          sets: sets,
+          reps: reps,
+          calories: caloriesPerExercise,
+        ),
+      );
+    }).toList();
   }
 
   Exercise _getExercise(String muscleGroup, String exerciseId) {
@@ -43,56 +50,6 @@ class UpperBodyWorkoutPage extends StatelessWidget {
     );
   }
 
-  ExerciseConfig _getExerciseConfig(Exercise exercise) {
-    int sets;
-    int reps;
-    int calories;
-
-    switch (difficulty.toLowerCase()) {
-      case 'beginner':
-        sets = 3;
-        reps = 12;
-        calories = _getCaloriesForExercise(exercise.id, 'Beginner');
-        break;
-      case 'intermediate':
-        sets = 4;
-        reps = 10;
-        calories = _getCaloriesForExercise(exercise.id, 'Intermediate');
-        break;
-      case 'advanced':
-        sets = 5;
-        reps = 8;
-        calories = _getCaloriesForExercise(exercise.id, 'Advanced');
-        break;
-      default:
-        sets = 3;
-        reps = 12;
-        calories = 50;
-    }
-
-    return ExerciseConfig(
-      sets: sets,
-      reps: reps,
-      calories: calories,
-    );
-  }
-
-  int _getCaloriesForExercise(String exerciseId, String difficulty) {
-    final Map<String, Map<String, int>> caloriesByExercise = {
-      'barbell_benchpress': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'incline_dumbbell_press': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'latPulldown': {'Beginner': 30, 'Intermediate': 35, 'Advanced': 40},
-      'seated_cable_row': {'Beginner': 25, 'Intermediate': 30, 'Advanced': 35},
-      'barbell_overhead_press': {'Beginner': 25, 'Intermediate': 35, 'Advanced': 40},
-      'lateralRaises': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 25},
-      'barbell_curl': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-      'tricep_pushdowns': {'Beginner': 20, 'Intermediate': 25, 'Advanced': 30},
-    };
-
-    return caloriesByExercise[exerciseId]?[difficulty] ?? 
-      (difficulty == 'Beginner' ? 70 : difficulty == 'Intermediate' ? 95 : 115);
-  }
-
   Workout _buildWorkout() {
     return Workout(
       id: 'upper_body_${difficulty.toLowerCase()}',
@@ -101,11 +58,9 @@ class UpperBodyWorkoutPage extends StatelessWidget {
       category: 'Strength',
       difficulty: difficulty,
       imageUrl: 'assets/images/workouts/upper_body.jpg',
-      exercises: _getExercises(),
-      addedAt: DateTime.now(),
-      customDuration: difficulty.toLowerCase() == 'beginner' ? 50 
-                     : difficulty.toLowerCase() == 'intermediate' ? 65 
-                     : 80, // Duration in minutes
+      exercises: _getExercises(),      addedAt: DateTime.now(),
+      customDuration: 20, // Updated from 15 to 20 minutes
+      customCalories: 100, // Fixed 100 calories
     );
   }
 

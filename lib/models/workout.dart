@@ -115,12 +115,25 @@ class Workout {
     this.customCalories,
   });
 
-  // Get calories, prioritize custom calories if set
-  int get calories {
+  // Get total calories for the workout
+  int get calories => customCalories ?? exercises.fold(0, (sum, exercise) => sum + exercise.calories);
+
+  // Get calories per exercise based on customCalories if set
+  int getCaloriesPerExercise() {
     if (customCalories != null) {
-      return customCalories!;
+      return exercises.isEmpty ? 0 : customCalories! ~/ exercises.length;
     }
-    return exercises.fold(0, (sum, exercise) => sum + exercise.calories);
+    return 0;
+  }
+
+  // Calculate calories per set for a specific exercise
+  int getCaloriesPerSet(int exerciseIndex) {
+    if (exerciseIndex < 0 || exerciseIndex >= exercises.length) return 0;
+    if (customCalories != null) {
+      final caloriesPerExercise = customCalories! ~/ exercises.length;
+      return caloriesPerExercise ~/ exercises[exerciseIndex].sets;
+    }
+    return exercises[exerciseIndex].calories ~/ exercises[exerciseIndex].sets;
   }
 
   // Use custom duration if provided, otherwise calculate based on sets

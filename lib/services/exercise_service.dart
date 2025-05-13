@@ -2,6 +2,23 @@ import '../models/workout.dart';
 import 'exercise_library_service.dart';
 
 class ExerciseService {
+  static String _getMuscleGroupForExercise(String id) {
+    String muscleTarget = _getMuscleTarget(id);
+    switch (muscleTarget) {
+      case 'Chest':
+      case 'Triceps':
+        return muscleTarget;
+      case 'Back':
+      case 'Biceps':
+        return muscleTarget;
+      case 'Legs':
+      case 'Shoulders':
+        return muscleTarget;
+      default:
+        return 'Other';
+    }
+  }
+
   static final Map<String, Map<String, Map<String, List<String>>>> pplExerciseIds = {
     'Monday': {
       'Beginner': {
@@ -415,7 +432,30 @@ class ExerciseService {
       default:
         return [];
     }
-    return getExercisesForPPLWorkout(day, difficulty);
+
+    final exerciseIds = pplExerciseIds[day]?[difficulty]?['exercises'] ?? [];
+    if (exerciseIds.isEmpty) return [];
+
+    final totalCalories = defaultCalories[difficulty]?['PPL'] ?? 900;
+    final caloriesPerExercise = totalCalories ~/ exerciseIds.length;
+
+    return exerciseIds.map((id) {
+      final muscleGroup = _getMuscleGroupForExercise(id);
+      try {
+        final exercise = findExercise(muscleGroup, id);
+        return WorkoutExercise(
+          exercise: exercise,
+          config: ExerciseConfig(
+            sets: _getSetsForDifficulty(difficulty),
+            reps: _getRepsForDifficulty(difficulty),
+            calories: caloriesPerExercise,
+          ),
+        );
+      } catch (e) {
+        print('Error creating exercise for $id: $e');
+        return null;
+      }
+    }).whereType<WorkoutExercise>().toList();
   }
 
   static bool isPPLWorkoutDay(String day) {

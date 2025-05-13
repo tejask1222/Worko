@@ -1,6 +1,7 @@
 import '../models/workout.dart';
 
-class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exercises = {
+class ExerciseLibraryService {
+  static final Map<String, List<Exercise>> _exercises = {
     'Chest': [
       Exercise(
         id: 'pushups',
@@ -36,7 +37,8 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         description: 'A bodyweight exercise that targets chest and triceps',
         targetMuscles: 'Chest, Triceps',
         imageUrl: 'assets/images/workouts/dips.jpeg',
-      ),      Exercise(
+      ),
+      Exercise(
         id: "barbell benchpresss",
         name: "Barbell Bench Press",
         description: "A compound weightlifting exercise that primarily targets the chest, shoulders, and triceps.",
@@ -141,7 +143,8 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         targetMuscles: 'Shoulders, Back',
         imageUrl: 'assets/images/workouts/reverse_pec_deck.jpg',
       ),
-    ],    'Legs': [
+    ],
+    'Legs': [
       Exercise(
         id: 'squats',
         name: 'Squats',
@@ -211,7 +214,8 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         description: 'An isolation exercise targeting the hamstring muscles',
         targetMuscles: 'Hamstrings',
         imageUrl: 'assets/images/workouts/leg_curl.jpeg',
-      ),      Exercise(
+      ),
+      Exercise(
         id: 'walking_lunges',
         name: 'Walking Lunges',
         description: 'A dynamic leg exercise targeting multiple muscle groups',
@@ -261,7 +265,8 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         description: 'A compound pulling exercise that targets the back muscles',
         targetMuscles: 'Back, Biceps',
         imageUrl: 'assets/images/workouts/rows.jpg',
-      ),      Exercise(
+      ),
+      Exercise(
         id: 'latPulldown',
         name: 'Lat Pulldown',
         description: 'A machine exercise that targets the latissimus dorsi',
@@ -405,12 +410,14 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
       ),
     ],
     'Shoulders': [
-      Exercise(        id: 'barbell_overhead_press',
+      Exercise(
+        id: 'barbell_overhead_press',
         name: 'Barbell Overhead Press',
         description: 'A compound exercise for developing shoulder strength',
         targetMuscles: 'Shoulders',
         imageUrl: 'assets/images/workouts/barbell_overhead_press.jpg',
-      ),      Exercise(
+      ),
+      Exercise(
         id: 'lateralRaises',
         name: 'Lateral Raises',
         description: 'An isolation exercise targeting the lateral deltoids',
@@ -668,10 +675,20 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
   static List<String> getMuscleGroups() {
     return _exercises.keys.toList();
   }
-  static List<WorkoutExercise> getDefaultWorkoutExercises(String workoutType) {
-    final defaultConfig = ExerciseConfig(sets: 3, reps: 12, calories: 50);
-    final cardioConfig = ExerciseConfig(sets: 3, reps: 30, calories: 100);
 
+  static ExerciseConfig get defaultConfig => ExerciseConfig(
+    sets: 3,
+    reps: 12,
+    calories: 50,
+  );
+
+  static ExerciseConfig get cardioConfig => ExerciseConfig(
+    sets: 3,
+    reps: 30,
+    calories: 100,
+  );
+
+  static List<WorkoutExercise> getDefaultWorkoutExercises(String workoutType) {
     switch (workoutType) {
       case 'Full Body':
         return [
@@ -684,8 +701,7 @@ class ExerciseLibraryService {  static final Map<String, List<Exercise>> _exerci
         ].map((e) => WorkoutExercise(
           exercise: e, 
           config: e.targetMuscles.contains('Cardio') ? cardioConfig : defaultConfig
-        )).toList();
-      
+        )).toList();      
       case 'Upper Body':
         return [
           _exercises['Chest']![0], // Push-ups

@@ -14,16 +14,39 @@ class CoreWorkoutPage extends StatelessWidget {
     final exercises = [
       _getExercise('Core', 'plank'),
       _getExercise('Core', 'crunches'),
-      _getExercise('Core', 'russianTwists'),
-      _getExercise('Cardio', 'mountainClimbers'),
-      if (difficulty != 'Beginner') _getExercise('Core', 'leg_raises'),
-      if (difficulty == 'Advanced') _getExercise('Core', 'dragon_flags'),
-    ].where((e) => e != null).toList();
+      _getExercise('Core', 'russiantwists'),
+      _getExercise('Core', 'mountainclimbers'),
+    ];
+    
+    const totalWorkoutCalories = 80; // Fixed total calories
+    final caloriesPerExercise = totalWorkoutCalories ~/ exercises.length;
 
-    return exercises.map((exercise) => WorkoutExercise(
-      exercise: exercise,
-      config: _getExerciseConfig(exercise),
-    )).toList();
+    return exercises.map((exercise) {
+      int sets;
+      int reps;
+
+      // Set reps/duration based on exercise type and difficulty
+      if (exercise.id == 'plank') {
+        sets = 3;
+        reps = difficulty.toLowerCase() == 'advanced' ? 60 : // 60 seconds
+               difficulty.toLowerCase() == 'intermediate' ? 45 : // 45 seconds
+               30; // 30 seconds for beginner
+      } else {
+        sets = difficulty.toLowerCase() == 'advanced' ? 5 : 
+               difficulty.toLowerCase() == 'intermediate' ? 4 : 3;
+        reps = difficulty.toLowerCase() == 'advanced' ? 25 : 
+               difficulty.toLowerCase() == 'intermediate' ? 20 : 15;
+      }
+
+      return WorkoutExercise(
+        exercise: exercise,
+        config: ExerciseConfig(
+          sets: sets,
+          reps: reps,
+          calories: caloriesPerExercise,
+        ),
+      );
+    }).toList();
   }
 
   Exercise _getExercise(String muscleGroup, String exerciseId) {
@@ -31,41 +54,6 @@ class CoreWorkoutPage extends StatelessWidget {
     return exercises.firstWhere(
       (e) => e.id == exerciseId,
       orElse: () => exercises.first,
-    );
-  }
-
-  ExerciseConfig _getExerciseConfig(Exercise exercise) {
-    int sets;
-    int reps;
-    int calories;
-
-    // Core exercises often use different rep ranges
-    switch (difficulty.toLowerCase()) {
-      case 'beginner':
-        sets = 3;
-        reps = exercise.id == 'plank' ? 30 : 15; // 30 seconds for planks, 15 reps for others
-        calories = exercise.targetMuscles.contains('Cardio') ? 100 : 50;
-        break;
-      case 'intermediate':
-        sets = 4;
-        reps = exercise.id == 'plank' ? 45 : 20;
-        calories = exercise.targetMuscles.contains('Cardio') ? 120 : 70;
-        break;
-      case 'advanced':
-        sets = 5;
-        reps = exercise.id == 'plank' ? 60 : 25;
-        calories = exercise.targetMuscles.contains('Cardio') ? 150 : 90;
-        break;
-      default:
-        sets = 3;
-        reps = 15;
-        calories = 50;
-    }
-
-    return ExerciseConfig(
-      sets: sets,
-      reps: reps,
-      calories: calories,
     );
   }
 
@@ -77,11 +65,9 @@ class CoreWorkoutPage extends StatelessWidget {
       category: 'Core',
       difficulty: difficulty,
       imageUrl: 'assets/images/workouts/core.jpg',
-      exercises: _getExercises(),
-      addedAt: DateTime.now(),
-      customDuration: difficulty.toLowerCase() == 'beginner' ? 30 
-                     : difficulty.toLowerCase() == 'intermediate' ? 45 
-                     : 60, // Duration in minutes
+      exercises: _getExercises(),      addedAt: DateTime.now(),
+      customDuration: 15, // Fixed 15 minutes
+      customCalories: 80, // Fixed 80 calories
     );
   }
 
