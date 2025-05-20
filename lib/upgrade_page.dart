@@ -195,60 +195,139 @@ class UpgradePage extends StatelessWidget {
                   if (!isPremium) {
                     final userId = FirebaseAuth.instance.currentUser?.uid;
                     if (userId != null) {
-                      try {
-                        // Determine which workouts to add based on plan type
-                        if (title.contains('Single Muscle')) {
-                          final muscleGroups = ['Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders', 'Legs'];
-                          final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                          
-                          for (var i = 0; i < muscleGroups.length; i++) {
-                            await FirebaseDatabase.instance.ref('userWorkouts/$userId/single_muscle_${days[i].toLowerCase()}').set({
-                              'workoutId': '5', // Beginner Single Muscle ID
-                              'day': days[i],
-                              'muscle': muscleGroups[i],
-                              'addedAt': DateTime.now().toIso8601String(),
-                              'title': '$days[i] - ${muscleGroups[i]}',
-                              'type': 'single_muscle',
-                              'difficulty': 'Beginner',
-                              'category': 'Strength'
-                            });
-                          }
-                        } else if (title.contains('PPL')) {
-                          final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                          final types = ['Push', 'Pull', 'Legs', 'Push', 'Pull', 'Legs'];
-                          
-                          for (var i = 0; i < days.length; i++) {
-                            await FirebaseDatabase.instance.ref('userWorkouts/$userId/ppl_${days[i].toLowerCase()}').set({
-                              'workoutId': '8', // Beginner PPL ID
-                              'day': days[i],
-                              'type': types[i],
-                              'addedAt': DateTime.now().toIso8601String(),
-                              'title': '$days[i] - ${types[i]}',
-                              'category': 'Strength',
-                              'difficulty': 'Beginner'
-                            });
-                          }
-                        }
-                        
-                        // Show success message and navigate to workout page
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Workout plan added successfully! You can now view your workouts.')),
-                          );
-                          Navigator.pushNamedAndRemoveUntil(
-                            context, 
-                            '/workout',  // Navigate directly to workout page
-                            (route) => false,
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Error adding workout plan: ${e.toString()}'),
-                              backgroundColor: Colors.red,
+
+                      // Show confirmation dialog
+                      final shouldAdd = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          title: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF4285F4).withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.fitness_center,
+                                  color: Color(0xFF4285F4),
+                                  size: 32,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                title,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                title.contains('Single Muscle') 
+                                  ? '6-day split program targeting one muscle group per day'
+                                  : '6-day Push, Pull, Legs split program',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 24),
+                              const Text(
+                                'Add this workout plan to your workouts?',
+                                style: TextStyle(fontSize: 16),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancel'),
                             ),
-                          );
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF4285F4),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                              ),
+                              child: const Text('Add Workout'),
+                            ),
+                          ],
+                          actionsAlignment: MainAxisAlignment.spaceEvenly,
+                        ),
+                      );
+
+                      if (shouldAdd == true) {
+                        try {
+                          final planKey = title.contains('Single Muscle') ? 'single_muscle' : 'ppl';
+                          final workoutId = title.contains('Single Muscle') ? '5' : '8';
+                          
+                          if (title.contains('Single Muscle')) {
+                            final muscleGroups = ['Chest', 'Back', 'Biceps', 'Triceps', 'Shoulders', 'Legs'];
+                            final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                            
+                            for (var i = 0; i < muscleGroups.length; i++) {
+                              await FirebaseDatabase.instance.ref('userWorkouts/$userId/${planKey}_${days[i].toLowerCase()}').set({
+                                'workoutId': workoutId,
+                                'day': days[i],
+                                'muscle': muscleGroups[i],
+                                'addedAt': DateTime.now().toIso8601String(),
+                                'title': '$days[i] - ${muscleGroups[i]}',
+                                'type': planKey,
+                                'difficulty': 'Beginner',
+                                'category': 'Strength'
+                              });
+                            }
+                          } else if (title.contains('PPL')) {
+                            final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                            final types = ['Push', 'Pull', 'Legs', 'Push', 'Pull', 'Legs'];
+                            
+                            for (var i = 0; i < days.length; i++) {
+                              await FirebaseDatabase.instance.ref('userWorkouts/$userId/${planKey}_${days[i].toLowerCase()}').set({
+                                'workoutId': workoutId,
+                                'day': days[i],
+                                'type': types[i],
+                                'addedAt': DateTime.now().toIso8601String(),
+                                'title': '$days[i] - ${types[i]}',
+                                'difficulty': 'Beginner',
+                                'category': 'Strength'
+                              });
+                            }
+                          }
+                          
+                          // Show success message and navigate to workout page
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Workout plan added successfully! Check the workout tab to get started.')),
+                            );
+                            Navigator.pushNamedAndRemoveUntil(
+                              context, 
+                              '/home', 
+                              (route) => false,
+                              arguments: 1, // This will open the Workout tab
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error adding workout plan: ${e.toString()}'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
                       }
                     } else {

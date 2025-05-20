@@ -12,7 +12,6 @@ import 'pages/workouts/full_body_workout_page.dart';
 import 'pages/workouts/upper_body_workout_page.dart';
 import 'pages/workouts/lower_body_workout_page.dart';
 import 'pages/workouts/core_workout_page.dart';
-import 'pages/workouts/single_muscle_split_page.dart';
 import 'pages/ppl_day_selection_page.dart';
 
 class WorkoutPage extends StatefulWidget {
@@ -32,7 +31,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
   final List<String> _categories = [
     'All',
     'Strength',
-    'Cardio',
     'Core',
     'Flexibility'
   ];
@@ -53,16 +51,13 @@ class _WorkoutPageState extends State<WorkoutPage> {
     super.dispose();
   }
 
-  List<Workout> get filteredWorkouts {
-    var workouts = WorkoutTemplates.allWorkouts;
+  Future<bool> _hasActivatedBeginnerWorkouts() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
 
-    return workouts.where((workout) {
-      final matchesSearch = workout.title.toLowerCase().contains(_searchQuery) ||
-          workout.description.toLowerCase().contains(_searchQuery);
-      final matchesCategory = _selectedCategory == 'All' || 
-          workout.category == _selectedCategory;
-      return matchesSearch && matchesCategory;
-    }).toList();
+    final userWorkoutsRef = FirebaseDatabase.instance.ref('userWorkouts/${user.uid}');
+    final snapshot = await userWorkoutsRef.get();
+    return snapshot.exists;
   }
 
   @override
@@ -138,24 +133,65 @@ class _WorkoutPageState extends State<WorkoutPage> {
               ),
             ),
             Expanded(
-              child: filteredWorkouts.isEmpty
-                ? Center(
-                    child: Text(
-                      'No match found',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 16,
+              child: FutureBuilder<bool>(
+                future: _hasActivatedBeginnerWorkouts(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Error loading workouts',
+                        style: TextStyle(color: Colors.grey[600]),
                       ),
-                    ),
-                  )
-                : ListView.builder(
+                    );
+                  }
+
+                  // Get all workouts
+                  var workouts = WorkoutTemplates.allWorkouts;
+
+                  // Filter out beginner programs if not activated
+                  bool hasActivated = snapshot.hasData && snapshot.data == true;
+                  if (!hasActivated) {
+                    workouts = workouts.where((workout) => 
+                      !(workout.id == '5' || workout.id == '8')).toList();
+                  }
+
+                  // Apply search and category filters
+                  final filtered = workouts.where((workout) {
+                    final matchesSearch = workout.title.toLowerCase().contains(_searchQuery) ||
+                        workout.description.toLowerCase().contains(_searchQuery);
+                    final matchesCategory = _selectedCategory == 'All' || 
+                        workout.category == _selectedCategory;
+                    return matchesSearch && matchesCategory;
+                  }).toList();
+
+                  if (filtered.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No match found',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: filteredWorkouts.length,
+                    itemCount: filtered.length,
                     itemBuilder: (context, index) {
-                      final workout = filteredWorkouts[index];
+                      final workout = filtered[index];
                       return WorkoutCard(workout: workout);
                     },
-                  ),
+                  );
+                },
+              ),
             ),
           ],
         ),
